@@ -6,6 +6,7 @@
 <template>
   <div>
     question-bank-multiple-info
+    1111
   </div>
 </template>
 
