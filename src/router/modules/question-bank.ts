@@ -18,13 +18,13 @@ const questionBankRoutes: RouteConfig = {
       // component: () => import(/* webpackChunkName: "question-bank-single" */ '@/views/teacher/teacher-info.vue'),
       redirect: '/question-bank/question-bank-single/question-bank-single-info',
       name: 'questionBankSingle',
-      meta: { title: 'questionBankSingle', icon: 'documentation' },
+      meta: { title: 'questionBankSingle', icon: 'single' },
       children: [
         {
           path: 'question-bank-single-info',
           component: () => import(/* webpackChunkName: "question-bank-single-info" */ '@/views/question-bank/question-bank-single/question-bank-single-info.vue'),
           name: 'questionBankSingleInfo',
-          meta: { title: 'questionBankSingleInfo', icon: 'excel' }
+          meta: { title: 'questionBankSingleInfo', icon: 'single-info' }
         },
         {
           path: 'question-bank-single-upload',
@@ -40,13 +40,13 @@ const questionBankRoutes: RouteConfig = {
       // component: () => import(/* webpackChunkName: "question-bank-multiple" */ '@/views/teacher/teacher-info.vue'),
       redirect: '/question-bank/question-bank-multiple/question-bank-multiple-info',
       name: 'questionBankMultiple',
-      meta: { title: 'questionBankMultiple', icon: 'documentation' },
+      meta: { title: 'questionBankMultiple', icon: 'multiple' },
       children: [
         {
           path: 'question-bank-multiple-info',
           component: () => import(/* webpackChunkName: "question-bank-multiple-info" */ '@/views/question-bank/question-bank-multiple/question-bank-multiple-info.vue'),
           name: 'questionBankMultipleInfo',
-          meta: { title: 'questionBankMultipleInfo', icon: 'excel' }
+          meta: { title: 'questionBankMultipleInfo', icon: 'multipleInfo' }
         },
         {
           path: 'question-bank-multiple-upload',
@@ -62,13 +62,13 @@ const questionBankRoutes: RouteConfig = {
       // component: () => import(/* webpackChunkName: "question-bank-single" */ '@/views/teacher/teacher-info.vue'),
       redirect: '/question-bank/question-bank-judge/question-bank-judge-info',
       name: 'questionBankJudge',
-      meta: { title: 'questionBankJudge', icon: 'documentation' },
+      meta: { title: 'questionBankJudge', icon: 'judge' },
       children: [
         {
           path: 'question-bank-judge-info',
           component: () => import(/* webpackChunkName: "question-bank-judge-info" */ '@/views/question-bank/question-bank-judge/question-bank-judge-info.vue'),
           name: 'questionBankJudgeInfo',
-          meta: { title: 'questionBankJudgeInfo', icon: 'excel' }
+          meta: { title: 'questionBankJudgeInfo', icon: 'judgeInfo' }
         },
         {
           path: 'question-bank-judge-upload',
@@ -84,13 +84,13 @@ const questionBankRoutes: RouteConfig = {
       // component: () => import(/* webpackChunkName: "question-bank-completion" */ '@/views/teacher/teacher-info.vue'),
       redirect: '/question-bank/question-bank-completion/question-bank-completion-info',
       name: 'questionBankCompletion',
-      meta: { title: 'questionBankCompletion', icon: 'documentation' },
+      meta: { title: 'questionBankCompletion', icon: 'completion' },
       children: [
         {
           path: 'question-bank-completion-info',
           component: () => import(/* webpackChunkName: "question-bank-completion-info" */ '@/views/question-bank/question-bank-completion/question-bank-completion-info.vue'),
           name: 'questionBankCompletionInfo',
-          meta: { title: 'questionBankCompletionInfo', icon: 'excel' }
+          meta: { title: 'questionBankCompletionInfo', icon: 'completionInfo' }
         },
         {
           path: 'question-bank-completion-upload',
@@ -106,13 +106,13 @@ const questionBankRoutes: RouteConfig = {
       // component: () => import(/* webpackChunkName: "question-bank-completion" */ '@/views/teacher/teacher-info.vue'),
       redirect: '/question-bank/question-bank-afq/question-bank-afq-info',
       name: 'questionBankAFQ',
-      meta: { title: 'questionBankAFQ', icon: 'documentation' },
+      meta: { title: 'questionBankAFQ', icon: 'afq' },
       children: [
         {
           path: 'question-bank-afq-info',
           component: () => import(/* webpackChunkName: "question-bank-afq-info" */ '@/views/question-bank/question-bank-afq/question-bank-afq-info.vue'),
           name: 'questionBankAFQInfo',
-          meta: { title: 'questionBankAFQInfo', icon: 'excel' }
+          meta: { title: 'questionBankAFQInfo', icon: 'documentation' }
         },
         {
           path: 'question-bank-afq-upload',

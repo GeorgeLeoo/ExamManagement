@@ -1,4 +1,20 @@
-<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
-  <path d="M78.2 16.6V25H117v5.3H78.2V39H117v5.4H78.2V53H117v5.4H78.2v8.5H117v5.4H78.2V81H117v5.4H78.2v8.5H117v5.4H78.2v11.1H128V16.6H78.2zM0 114.4L72.1 128V0L0 13.6v100.8z"/>
-  <path d="M28.7 82.6H17.5L32.3 59 18.2 36.5h11.5l8.2 15 8.4-15h11.2L43.4 58.7l15 23.9H46.7l-8.8-15.7z"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>excel</title>
+    <desc>Created with Sketch.</desc>
+    <g id="教师信息管理" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-61.000000, -231.000000)" fill-rule="nonzero" id="nav">
+            <g transform="translate(-1.000000, 0.000000)">
+                <g id="批量上传信息" transform="translate(3.000000, 216.000000)">
+                    <g id="sidebar/1">
+                        <g id="excel" transform="translate(59.000000, 15.000000)">
+                            <rect id="矩形" fill="#000000" opacity="0" x="0" y="0" width="16" height="16"></rect>
+                            <path d="M9.776,2.072 L9.776,3.12 L14.616,3.12 L14.616,3.792 L9.776,3.792 L9.776,4.88 L14.616,4.88 L14.616,5.552 L9.776,5.552 L9.776,6.624 L14.616,6.624 L14.616,7.296 L9.776,7.296 L9.776,8.368 L14.616,8.368 L14.616,9.04 L9.776,9.04 L9.776,10.112 L14.616,10.112 L14.616,10.784 L9.776,10.784 L9.776,11.848 L14.616,11.848 L14.616,12.52 L9.776,12.52 L9.776,13.912 L16,13.912 L16,2.072 L9.776,2.072 L9.776,2.072 Z M0,14.296 L9.016,16 L9.016,0 L0,1.704 M3.584,10.32 L2.184,10.32 L4.032,7.384 L2.272,4.56 L3.712,4.56 L4.736,6.432 L5.792,4.56 L7.184,4.56 L5.424,7.336 L7.296,10.32 L5.832,10.32 L4.736,8.36 L3.584,10.32 Z" id="形状" fill="#FFFFFF"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
 </svg>

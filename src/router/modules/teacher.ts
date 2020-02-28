@@ -8,7 +8,7 @@ const teacherRoutes: RouteConfig = {
   name: 'Teacher',
   meta: {
     title: 'teacher',
-    icon: 'people'
+    icon: 'teacher'
   },
   children: [
     {
