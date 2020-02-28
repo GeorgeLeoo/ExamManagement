@@ -42,3 +42,15 @@ export interface IUserData {
   introduction: string
   roles: string[]
 }
+
+export interface ITeacherData {
+  no: string
+  password: string
+  email: string
+  gender: string
+  avatar: string
+  phone: string
+  state: number
+  signUpAt: string
+  createdAt: string
+}
