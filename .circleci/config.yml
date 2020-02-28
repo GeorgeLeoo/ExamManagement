@@ -23,7 +23,7 @@ jobs:
           key: dependencies_exam_management
       - run:
           name: Build
-          command: yarn build
+          command: yarn build:prod
       - run:
           name: Prepare shell commands
           # shell chmod +x 赋予执行权限
