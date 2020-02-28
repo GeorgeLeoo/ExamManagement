@@ -1,45 +1,34 @@
-## Javascript Node CircleCI 2.0 configuration file
-##
-## Check https://circleci.com/docs/2.0/language-javascript/ for more details
-##
-#version: 2
-#
-#jobs:
-#  build:
-#    docker:
-#      - image: circleci/node:12
-#
-#    working_directory: ~/exam-management
-#    branches:
-#      only:
-#        - feature
-#    steps:
-#      - add_ssh_keys:
-#          - fingerprints:
-#              - ""
-#      - checkout
-#
-#      # Download and cache dependencies
-#      - restore_cache:
-#          keys:
-#          - v1-dependencies-{{ checksum "package.json" }}
-#          # fallback to using the latest cache if no exact match is found
-#          - v1-dependencies-
-#
-#      - run: yarn install
-#
-#      - save_cache:
-#          paths:
-#            - node_modules
-#          key: v1-dependencies-{{ checksum "package.json" }}
-#
-#      - run: yarn lint && yarn build:prod
-
 version: 2
 jobs:
   build:
     docker:
       - image: circleci/node:12
+    branches:
+      only:
+        - master
     steps:
-      - run: echo "A first hello"
-      - run: npm -v
+      - add_ssh_keys:
+          fingerprints:
+            - "7c:56:f5:dd:07:a0:fc:c8:15:52:d0:77:c7:d2:53:53"
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies_exam_management
+      - run:
+          name: Install
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies_exam_management
+      - run:
+          name: Build
+          command: yarn build:prod
+      - run:
+          name: Prepare shell commands
+          # shell chmod +x 赋予执行权限
+          # 执行shell脚本
+          command: chmod +x scripts/deploy.sh
+      - run:
+          name: Run Deploy to Github pages
+          command: ./scripts/deploy.sh
