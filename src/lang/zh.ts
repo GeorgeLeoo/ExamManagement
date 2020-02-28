@@ -90,6 +90,27 @@ export default {
     externalLink: '外链',
     profile: '个人中心'
   },
+  operation: '操作',
+  enable: '启用',
+  disable: '关闭',
+  teacher: {
+    ph_no: '请输入工号',
+    ph_name: '请输入姓名',
+    ph_gender: '请选择性别',
+    search: '搜索',
+    add: '添加',
+    exportCurrentPage: '导出当前页教师信息',
+    exportAllPage: '导出所有教师信息',
+    no: '工号',
+    name: '姓名',
+    gender: '性别',
+    avatar: '头像',
+    email: '邮箱',
+    phone: '手机号',
+    state: '状态',
+    signUpAt: '注册时间',
+    createdAt: '创建时间'
+  },
   navbar: {
     logOut: '退出登录',
     dashboard: '首页',
