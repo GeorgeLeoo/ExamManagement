@@ -8,7 +8,7 @@ const studentRoutes: RouteConfig = {
   name: 'Student',
   meta: {
     title: 'student',
-    icon: 'people'
+    icon: 'student'
   },
   children: [
     {

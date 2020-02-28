@@ -10,8 +10,13 @@ jobs:
       - image: circleci/node:12
 
     working_directory: ~/exam-management
-
+    branches:
+      only:
+        - feature
     steps:
+      - add_ssh_keys:
+          - fingerprints:
+              - ""
       - checkout
 
       # Download and cache dependencies

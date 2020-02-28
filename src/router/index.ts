@@ -86,7 +86,7 @@ export const constantRoutes: RouteConfig[] = [
         name: 'Dashboard',
         meta: {
           title: 'dashboard',
-          icon: 'dashboard',
+          icon: 'home',
           affix: true
         }
       }

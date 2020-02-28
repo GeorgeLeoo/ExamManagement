@@ -10,9 +10,15 @@
 </template>
 
 <script>
-export default {
-  name: 'QuestionBankCompletionUpload'
-}
+
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component({
+  name: 'QuestionBankCompletionUpload',
+  components: {
+  }
+})
+export default class extends Vue {}
 </script>
 
 <style scoped lang="scss">
