@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="14px" viewBox="0 0 16 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>home</title>
+    <desc>Created with Sketch.</desc>
+    <g id="教师信息管理" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-21.000000, -73.000000)" fill-rule="nonzero" id="nav">
+            <g transform="translate(-1.000000, 0.000000)">
+                <g id="首页管理" transform="translate(1.000000, 52.000000)">
+                    <g id="sidebar/1">
+                        <g id="home" transform="translate(21.000000, 20.000000)">
+                            <rect id="矩形" fill="#000000" opacity="0" x="0" y="0" width="16" height="16"></rect>
+                            <path d="M2.641,9.313 L2.641,13.696 L4.971,13.696 L4.971,11.079 L10.948,11.079 L10.948,13.696 L13.278,13.696 L13.278,9.274 L7.963,5.496 L2.641,9.313 Z M7.959,3.883 L14.608,8.608 L14.608,15 L9.618,15 L9.618,12.383 L6.301,12.383 L6.301,15 L1.31,15 L1.31,8.651 L7.96,3.882 L7.959,3.883 Z M0.776,7.672 L0,6.612 L7.957,1 L16,6.612 L15.23,7.674 L7.962,2.604 L0.776,7.672 Z" id="形状" fill="#FFFFFF"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
