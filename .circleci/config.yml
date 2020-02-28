@@ -3,6 +3,32 @@ jobs:
   build:
     docker:
       - image: circleci/node:12
+    branches:
+      only:
+        - master
     steps:
-      - run: echo "A first hello"
-      - run: npm -v
+      - add_ssh_keys:
+          fingerprints:
+            - "7c:56:f5:dd:07:a0:fc:c8:15:52:d0:77:c7:d2:53:53"
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies_exam_management
+      - run:
+          name: Install
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies_exam_management
+      - run:
+          name: Build
+          command: yarn build
+      - run:
+          name: Prepare shell commands
+          # shell chmod +x 赋予执行权限
+          # 执行shell脚本
+          command: chmod +x scripts/deploy.sh
+      - run:
+          name: Run Deploy to Github pages
+          command: ./scripts/deploy.sh
