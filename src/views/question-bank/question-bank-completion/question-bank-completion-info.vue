@@ -6,6 +6,7 @@
 <template>
   <div>
     question-bank-completion-info
+    312
   </div>
 </template>
 
