@@ -36,7 +36,6 @@
 #      - run: yarn lint && yarn build:prod
 
 version: 2
-
 jobs:
   build:
     docker:
