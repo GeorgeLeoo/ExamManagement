@@ -492,7 +492,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/img/zip.6da3bad1.svg"
   },
   {
-    "revision": "1629be010d78ab30f7393e36e9a8a6ae",
+    "revision": "01944e63cbe88275553c146db1ca5f2b",
     "url": "/ExamManagement/index.html"
   },
   {
@@ -716,8 +716,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/js/question-bank-afq-upload.1b4d1006.js"
   },
   {
-    "revision": "8692fa3f8ed67f468056",
-    "url": "/ExamManagement/js/question-bank-completion-info.bc236d60.js"
+    "revision": "52e526c3c0028d1abcec",
+    "url": "/ExamManagement/js/question-bank-completion-info.d4e755c2.js"
   },
   {
     "revision": "b9e6d504ad005bb12e4a",
@@ -752,8 +752,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/js/redirect.91b3c702.js"
   },
   {
-    "revision": "a558ad87b1537680f7ef",
-    "url": "/ExamManagement/js/runtime.c1c74329.js"
+    "revision": "52f949b006ff870e4d41",
+    "url": "/ExamManagement/js/runtime.1b985fa2.js"
   },
   {
     "revision": "da01a005ed36872a9e3f",
