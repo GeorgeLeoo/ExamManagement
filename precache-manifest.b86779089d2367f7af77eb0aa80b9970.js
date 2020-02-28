@@ -8,8 +8,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/css/404.00c96426.css"
   },
   {
-    "revision": "020990b0adbd14ecc6bd",
-    "url": "/ExamManagement/css/app.2964ff98.css"
+    "revision": "7f2b9336b84e7818f89b",
+    "url": "/ExamManagement/css/app.79ddd07f.css"
   },
   {
     "revision": "f0e07b6d0423fec2fa4d",
@@ -492,7 +492,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/img/zip.6da3bad1.svg"
   },
   {
-    "revision": "01944e63cbe88275553c146db1ca5f2b",
+    "revision": "ddbf94f0a9eacf4251dc521a73d1f536",
     "url": "/ExamManagement/index.html"
   },
   {
@@ -504,8 +504,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/js/404.2bdd54ad.js"
   },
   {
-    "revision": "020990b0adbd14ecc6bd",
-    "url": "/ExamManagement/js/app.2dad53df.js"
+    "revision": "7f2b9336b84e7818f89b",
+    "url": "/ExamManagement/js/app.27c2e8fb.js"
   },
   {
     "revision": "6d7972f30fb6cb0c893a",
@@ -752,8 +752,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/js/redirect.91b3c702.js"
   },
   {
-    "revision": "52f949b006ff870e4d41",
-    "url": "/ExamManagement/js/runtime.1b985fa2.js"
+    "revision": "cd87325e8563eb97fbaa",
+    "url": "/ExamManagement/js/runtime.99f0c234.js"
   },
   {
     "revision": "da01a005ed36872a9e3f",
@@ -792,8 +792,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ExamManagement/js/teacher-info-upload.cdd6fe81.js"
   },
   {
-    "revision": "933a6399f5715fa5ac3b",
-    "url": "/ExamManagement/js/teacher-info.6eb47ab3.js"
+    "revision": "3a4b830259c430877b57",
+    "url": "/ExamManagement/js/teacher-info.be755dbc.js"
   },
   {
     "revision": "189250d9eb497e3fbaf8",
