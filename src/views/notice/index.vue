@@ -312,7 +312,7 @@ export default class extends Vue {
      * 删除
      * @param _id
      */
-    async deleteNoticeById(_id: String) {
+    async deleteNoticeById(_id: string) {
       const body: IDeleteParams = {
         _id
       }

@@ -334,7 +334,7 @@ export default class extends Vue {
      * 删除
      * @param _id
      */
-    async deleteSubject(_id: String) {
+    async deleteSubject(_id: string) {
       const body: IDeleteParams = {
         _id
       }
