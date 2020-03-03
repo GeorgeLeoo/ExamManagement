@@ -7,27 +7,27 @@
   <div class="app-container teacher-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.no"
+        v-model="no"
         :placeholder="$t('teacher.ph_no')"
         style="width: 200px;"
         class="filter-item gap-right-32"
         @keyup.enter.native="handleFilter"
       />
       <el-input
-        v-model="listQuery.name"
+        v-model="name"
         :placeholder="$t('teacher.ph_name')"
         style="width: 200px;"
         class="filter-item gap-right-32"
         @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model="listQuery.gender"
+        v-model="gender"
         :placeholder="$t('teacher.ph_gender')"
         style="width: 120px"
         class="filter-item gap-right-32"
       >
         <el-option
-          v-for="item in genders"
+          v-for="item in $t('teacher.select_genders')"
           :key="item.id"
           :label="item.text"
           :value="item.id"
@@ -47,7 +47,7 @@
         class="filter-item gap-right-32"
         style="margin-left: 10px;"
         type="primary"
-        icon="el-icon-edit"
+        icon="el-icon-plus"
         @click="handleCreate"
       >
         {{ $t('teacher.add') }}
@@ -77,7 +77,7 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="list"
+      :data="teachersList"
       fit
       highlight-current-row
       style="width: 100%;"
@@ -106,7 +106,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.gender }}</span>
+          <span>{{ scope.row.gender | genderStatusFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -115,7 +115,10 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.avatar }}</span>
+          <el-avatar
+            size="medium"
+            :src="scope.row.avatar"
+          />
         </template>
       </el-table-column>
       <el-table-column
@@ -134,15 +137,6 @@
       >
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('teacher.state')"
-        prop="state"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.state }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -173,72 +167,126 @@
             type="success"
             @click="handleModifyStatus(row, 0)"
           >
-            {{ $t('teacher.enable') }}
+            {{ $t('enable') }}
           </el-button>
           <el-button
             v-if="row.status === 0"
             size="mini"
+            type="danger"
             @click="handleModifyStatus(row, 1)"
           >
-            {{ $t('teacher.disable') }}
+            {{ $t('disable') }}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-if="total > limit"
       :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="getList"
+      :page.sync="page"
+      :limit.sync="limit"
+      @pagination="getTeachers"
     />
+
+    <el-dialog
+      :visible.sync="dialogAddTeacherVisible"
+      :title="$t('teacher.dialogTitleAdd')"
+      width="500px"
+    >
+      <el-form
+        ref="form"
+        label-width="70px"
+      >
+        <el-form-item :label="$t('teacher.no')">
+          <el-input v-model="no" />
+        </el-form-item>
+        <el-form-item :label="$t('teacher.name')">
+          <el-input v-model="name" />
+        </el-form-item>
+        <el-form-item :label="$t('teacher.gender')">
+          <el-radio-group v-model="gender">
+            <el-radio :label="$t('male')" />
+            <el-radio :label="$t('female')" />
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          @click="dialogAddTeacherVisible = false"
+        >{{ $t('cancel') }}</el-button>
+        <el-button
+          type="primary"
+          @click="dialogAddTeacherVisible = false"
+        >{{ $t('ok') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { ITeacherData } from '@/api/types'
+import { ITeacherParams } from '@/api/types'
+import { getTeachers } from '@/api/teachers'
+import Pagination from '@/components/Pagination/index.vue'
 
 @Component({
   name: 'TeacherInfo',
   components: {
+    Pagination
   }
 })
 
 export default class extends Vue {
-  private tableKey: Number = 0;
-  private exportCurrentPageLoading: boolean = false;
-  private exportAllPageLoading: boolean = false;
-  private listLoading: boolean = false;
-  private list: ITeacherData[] = [];
-  private listQuery = {
-    no: '',
-    name: '',
-    gender: '',
-    page: 1,
-    limit: 10
-  };
-  private genders = [
-    {
-      text: '全部',
-      id: ''
-    },
-    {
-      text: '男',
-      id: 0
-    },
-    {
-      text: '女',
-      id: 1
+  private dialogAddTeacherVisible = false
+  private tableKey: Number = 0
+  private exportCurrentPageLoading: boolean = false
+  private exportAllPageLoading: boolean = false
+  private listLoading: boolean = false
+  private teachersList = []
+  private no = ''
+  private name = ''
+  private gender = ''
+  private page = 1;
+  private limit = 10;
+  private total = 0;
+
+  private params: ITeacherParams = {
+    page: this.page,
+    limit: this.limit
+  }
+
+  created() {
+    this.getTeachers()
+  }
+
+  private async getTeachers() {
+    if (this.no) {
+      Object.assign(this.params, { no: this.no })
     }
-  ];
+    if (this.name) {
+      Object.assign(this.params, { name: this.name })
+    }
+    if (this.gender) {
+      Object.assign(this.params, { gender: this.gender })
+    }
+    this.listLoading = true
+    const { data } = await getTeachers(this.params)
+    this.teachersList = data.list
+    this.total = data.total
+    this.listLoading = false
+  }
 
-  handleFilter() {}
+  handleFilter() {
+    this.getTeachers()
+  }
 
-  getList() {}
-
-  handleCreate() {}
+  handleCreate() {
+    this.dialogAddTeacherVisible = true
+  }
 
   handleExportCurrentPage() {}
 

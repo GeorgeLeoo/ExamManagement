@@ -5,17 +5,18 @@
 -->
 <template>
   <div>
-    question-bank-multiple-upload
+    <UploadInfo :btn-text="$t('teacher.downloadTemplate')" />
   </div>
 </template>
 
-<script>
-
+<script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import UploadInfo from '@/components/UploadInfo/index.vue'
 
 @Component({
   name: 'QuestionBankMultipleUpload',
   components: {
+    UploadInfo
   }
 })
 export default class extends Vue {}

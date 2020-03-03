@@ -5,16 +5,18 @@
 -->
 <template>
   <div>
-    student-info-upload
+    <UploadInfo :btn-text="$t('student.downloadTemplate')" />
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import UploadInfo from '@/components/UploadInfo/index.vue'
 
 @Component({
   name: 'StudentInfoUpload',
   components: {
+    UploadInfo
   }
 })
 export default class extends Vue {}

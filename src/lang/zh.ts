@@ -90,13 +90,43 @@ export default {
     externalLink: '外链',
     profile: '个人中心'
   },
+  msg: '考试通·完美的在线考试系统',
   operation: '操作',
   enable: '启用',
   disable: '关闭',
+  upload: '上传',
+  add: '添加',
+  search: '搜索',
+  edit: '编辑',
+  ok: '确定',
+  cancel: '取消',
+  delete: '删除',
+  index: '序号',
+  createTime: '创建时间',
+  male: '男',
+  female: '女',
+  downloadTemplateTip: '将文件拖到此处，或',
+  download: '点击上传',
   teacher: {
     ph_no: '请输入工号',
     ph_name: '请输入姓名',
     ph_gender: '请选择性别',
+    select_genders: [
+      {
+        text: '全部',
+        id: ''
+      },
+      {
+        text: '男',
+        id: 0
+      },
+      {
+        text: '女',
+        id: 1
+      }
+    ],
+    dialogTitleAdd: '教师信息添加',
+    dialogTitleModify: '教师信息修改',
     search: '搜索',
     add: '添加',
     exportCurrentPage: '导出当前页教师信息',
@@ -109,7 +139,115 @@ export default {
     phone: '手机号',
     state: '状态',
     signUpAt: '注册时间',
-    createdAt: '创建时间'
+    createdAt: '创建时间',
+    downloadTemplate: '请先下载教师信息模板'
+  },
+  student: {
+    ph_no: '请输入学号',
+    ph_name: '请输入姓名',
+    ph_gender: '请选择性别',
+    select_genders: [
+      {
+        text: '全部',
+        id: ''
+      },
+      {
+        text: '男',
+        id: 0
+      },
+      {
+        text: '女',
+        id: 1
+      }
+    ],
+    search: '搜索',
+    add: '添加',
+    exportCurrentPage: '导出当前页学生信息',
+    exportAllPage: '导出所有学生信息',
+    no: '学号',
+    name: '姓名',
+    gender: '性别',
+    avatar: '头像',
+    email: '邮箱',
+    phone: '手机号',
+    state: '状态',
+    signUpAt: '注册时间',
+    createdAt: '创建时间',
+    downloadTemplate: '请先下载学生信息模板',
+    dialogTitleAdd: '学生信息添加',
+    dialogTitleModify: '学生信息修改'
+  },
+  subject: {
+    ph_name: '请输入科目名称',
+    ph_author: '请输入创建者',
+    index: '序号',
+    name: '科目名称',
+    desc: '科目描述',
+    author: '创建者',
+    createTime: '创建时间',
+    paperCount: '试卷数量'
+  },
+  notice: {
+    ph_content: '请输入公告内容',
+    ph_author: '请输入创建者',
+    index: '序号',
+    content: '公告内容',
+    author: '创建者',
+    createTime: '创建时间',
+    dialogTitleAdd: '公告内容添加'
+  },
+  paper: {
+    name: '试卷名称',
+    ph_name: '请输入试卷名称',
+    ph_subject: '请选择科目',
+    ph_type: '请选择试卷类型',
+    subject: '科目',
+    type: '试卷类型',
+    randomCombinePager: '随机组卷',
+    fixedCombinePager: '固定组卷',
+    durationTime: '考试时长',
+    difficulty: '难度系数',
+    testType: '考试类型',
+    attention: '注意事项',
+    total: '试卷总分',
+    participantNumber: '参加人数',
+    singleScore: '单选分值',
+    multiplyScore: '多选分值',
+    judgeScore: '判断分值',
+    completeScore: '填空分值',
+    afqScore: '解答分值',
+    questionNumber: '题数'
+  },
+  score: {
+    no: '学号',
+    ph_no: '请输入学号',
+    ph_paperName: '请输入试卷名称',
+    paperName: '试卷名称',
+    name: '姓名',
+    score: '分数',
+    startTime: '开始考试时间',
+    endTime: '结束考试时间',
+    diffTime: '总耗时',
+    showPaper: '查看试卷',
+    exportCurrentPage: '导出当页学生成绩',
+    exportAllPage: '导出所有学生成绩'
+  },
+  questionBank: {
+    ph_question: '请输入题目',
+    ph_subject: '请选择科目',
+    question: '题目',
+    subject: '所属科目',
+    difficulty: '难度系数',
+    correctAnswer: '正确答案',
+    explanation: '答案解析',
+    knowledgePoint: '考点',
+    picture: '配图',
+    author: '创建者',
+    selection: '选项',
+    a: 'A',
+    b: 'B',
+    c: 'C',
+    d: 'D'
   },
   navbar: {
     logOut: '退出登录',
@@ -120,6 +258,33 @@ export default {
     profile: '个人中心'
   },
   login: {
+    no: '学号',
+    correctNO: '请输入正确的学号',
+    existNo: '该学号已注册',
+    emptyNo: '学号不能为空',
+    setPassword: '设置密码',
+    emptyPassword: '密码不能为空',
+    email: '邮箱',
+    correctEmail: '请输入正确的邮箱',
+    emptyEmail: '邮箱不能为空',
+    existEmail: '邮箱已存在',
+    hasAccount: '已有账号',
+    toLogin: '去登录',
+    signUp: '立即注册',
+    emptyAccount: '账号不能为空',
+    sendEmail: '发送验证邮箱',
+    code: '验证码',
+    emptyCode: '请输入验证码',
+    correctCode: '验证码不正确',
+    sendEmailText: [
+      '邮件已发送至你的邮箱',
+      '快去查收邮件吧'
+    ],
+    account: '学号或邮箱',
+    accountHint: '请输入正确的邮箱或学号',
+    passwordHint: '密码由字母和数字组成，且不少于 6 位',
+    freeSignUp: '免费注册',
+    forgetPassword: '忘记密码',
     title: '系统登录',
     logIn: '登录',
     username: '账号',
