@@ -39,10 +39,10 @@ Vue.use(Router)
 */
 
 /**
-  ConstantRoutes
-  a base page that does not have permission requirements
-  all roles can be accessed
-*/
+ ConstantRoutes
+ a base page that does not have permission requirements
+ all roles can be accessed
+ */
 export const constantRoutes: RouteConfig[] = [
   {
     path: '/redirect',
@@ -92,22 +92,48 @@ export const constantRoutes: RouteConfig[] = [
       }
     ]
   },
-  teacherRoutes,
-  studentRoutes,
   {
-    path: '/subject',
+    path: '/notice',
     component: Layout,
-    redirect: '/subject/index',
+    redirect: '/notice/index',
     children: [
       {
         path: 'index',
-        component: () => import(/* webpackChunkName: "subject" */ '@/views/subject/index.vue'),
-        name: 'Subject',
+        component: () => import(/* webpackChunkName: "notice" */ '@/views/notice/index.vue'),
+        name: 'Notice',
         meta: {
-          title: 'subject',
-          icon: 'subject',
+          title: 'notice',
+          icon: 'notice',
           noCache: true
         }
+      }
+    ]
+  },
+  {
+    path: '/teacher',
+    component: Layout,
+    redirect: '/teacher/teacher-info',
+    name: 'Teacher',
+    children: [
+      {
+        path: 'teacher-info',
+        component: () => import(/* webpackChunkName: "teacher-info" */ '@/views/teacher/teacher-info.vue'),
+        name: 'TeacherInfo',
+        meta: { title: 'teacher', icon: 'teacher' }
+      }
+    ]
+  },
+  {
+    path: '/student',
+    component: Layout,
+    redirect: '/student/student-info',
+    name: 'Student',
+    children: [
+      {
+        path: 'student-info',
+        component: () => import(/* webpackChunkName: "student-info" */ '@/views/student/student-info.vue'),
+        name: 'StudentInfo',
+        meta: { title: 'student', icon: 'student', noCache: true }
       }
     ]
   },
@@ -129,17 +155,17 @@ export const constantRoutes: RouteConfig[] = [
     ]
   },
   {
-    path: '/notice',
+    path: '/subject',
     component: Layout,
-    redirect: '/notice/index',
+    redirect: '/subject/index',
     children: [
       {
         path: 'index',
-        component: () => import(/* webpackChunkName: "notice" */ '@/views/notice/index.vue'),
-        name: 'Notice',
+        component: () => import(/* webpackChunkName: "subject" */ '@/views/subject/index.vue'),
+        name: 'Subject',
         meta: {
-          title: 'notice',
-          icon: 'notice',
+          title: 'subject',
+          icon: 'subject',
           noCache: true
         }
       }
@@ -215,7 +241,7 @@ export const constantRoutes: RouteConfig[] = [
 /**
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
-*/
+ */
 export const asyncRoutes: RouteConfig[] = [
   {
     path: '/permission',
