@@ -25,7 +25,7 @@ jobs:
           name: Prepare shell commands
           # shell chmod +x 赋予执行权限
           # 执行shell脚本
-          command: chmod a+x scripts/deploy.exp
+          command: chmod a+x scripts/deploy.sh
       - run:
           name: Run Deploy to Github pages
-          command: bash ./scripts/deploy.exp
+          command: sh ./scripts/deploy.sh
