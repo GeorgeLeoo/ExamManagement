@@ -120,6 +120,7 @@ export interface ICreateOrUpdateNoticeData {
   content: string,
   _id: string
 }
+
 export interface ICreateOrUpdateSubjectData {
   name: string,
   desc: string,
@@ -146,4 +147,9 @@ export interface ICreateOrUpdateNoticeResponseData {
 export interface IPage {
   page: number,
   limit: number
+}
+
+export interface ICreateOrUpdateTeachersData {
+  content: string,
+  _id: string
 }
