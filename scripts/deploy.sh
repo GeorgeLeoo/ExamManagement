@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-set timeout 100
+set timeout 1000
 
 spawn scp -r ./dist root@139.159.201.22:/root/www/ExamManagement
 
