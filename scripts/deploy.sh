@@ -2,7 +2,7 @@
 
 # 打印当前的工作路径
 
-set timeout 120
+set timeout 12000
 
 spawn scp -f ./dist root@139.159.201.22:/root/www/ExamManagement
 
