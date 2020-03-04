@@ -2,36 +2,36 @@
 
 # 打印当前的工作路径
 
-set timeout 12000
-
-spawn scp -f ./dist root@139.159.201.22:/root/www/ExamManagement
-
-expect "(yes/no)?"
-
-send "yes\n"
-
-expect "*assword:"
-
-send "123loveyou,\n"
-
-interact
-
-#set timeout 10
+#set timeout 120
 #
-#spawn scp "../dist/." root@139.159.201.22:/root/www/ExamManagement
+#spawn scp -f ./dist root@139.159.201.22:/root/www/ExamManagement
 #
-# expect {
+#expect "(yes/no)?"
 #
-# "(yes/no)?" {
-#    send "yes\n"
-#    expect "*assword:" { send "123loveyou,\n"}
-#  }
+#send "yes\n"
 #
-# "*assword:" {
-#    send "123loveyou,\n"
-#  }
-#}
+#expect "*assword:"
 #
-#expect "100%"
+#send "123loveyou,\n"
 #
-#expect eof
+#interact
+
+set timeout 10
+
+spawn scp -f "dist" root@139.159.201.22:/root/www/ExamManagement
+
+ expect {
+
+ "(yes/no)?" {
+    send "yes\n"
+    expect "*assword:" { send "123loveyou,\n"}
+  }
+
+ "*assword:" {
+    send "123loveyou,\n"
+  }
+}
+
+expect "100%"
+
+expect eof
