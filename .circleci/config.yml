@@ -28,4 +28,4 @@ jobs:
           command: chmod +x scripts/deploy.sh
       - run:
           name: Run Deploy to HWServer
-          command: ./scripts/deploy.sh
+          command: scripts/deploy.sh
