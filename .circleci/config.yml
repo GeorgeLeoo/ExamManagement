@@ -7,6 +7,9 @@ jobs:
       only:
         - master
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "56:e5:64:2a:56:37:10:6d:a2:72:0d:aa:ed:ae:d7:7f"
       - checkout
       - restore_cache:
           keys:
@@ -30,5 +33,5 @@ jobs:
           # 执行shell脚本
           command: chmod a+x scripts/deploy.sh
       - run:
-          name: Run Deploy to Github pages
+          name: Run Deploy to HWServer
           command: ./scripts/deploy.sh
