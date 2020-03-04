@@ -1,10 +1,6 @@
-#!/bin/sh
+#!/usr/bin/expect
 
 # 打印当前的工作路径
-
-pwd
-
-ls
 
 set timeout 120
 
