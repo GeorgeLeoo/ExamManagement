@@ -4,7 +4,7 @@
 
 set timeout 120
 
-spawn scp ./dist root@139.159.201.22:/root/www/ExamManagement
+spawn scp -f ./dist root@139.159.201.22:/root/www/ExamManagement
 
 expect "(yes/no)?"
 
