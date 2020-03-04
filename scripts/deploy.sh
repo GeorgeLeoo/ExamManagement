@@ -12,7 +12,7 @@ send "yes\n"
 
 expect "*assword:"
 
-send "123loveyou,\r"
+send "123loveyou,\n"
 
 interact
 
