@@ -1,4 +1,4 @@
-#!/usr/bin/expect
+#!/bin/sh
 
 # 打印当前的工作路径
 pwd
