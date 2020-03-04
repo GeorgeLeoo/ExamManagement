@@ -28,4 +28,4 @@ jobs:
           command: chmod a+x scripts/deploy.exp
       - run:
           name: Run Deploy to Github pages
-          command: bash ./scripts/deploy.exp
+          command: ./scripts/deploy.exp
