@@ -11,7 +11,9 @@ jobs:
       - restore_cache:
           keys:
             - dependencies_exam_management
-      - run: sudo apt-get update && sudo apt-get install expect
+      - run:
+          name: Install Expect
+          command: sudo apt-get update && sudo apt-get install expect
       - run:
           name: Install
           command: yarn install
