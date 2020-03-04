@@ -7,9 +7,6 @@ jobs:
       only:
         - master
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "7c:56:f5:dd:07:a0:fc:c8:15:52:d0:77:c7:d2:53:53"
       - checkout
       - restore_cache:
           keys:
@@ -28,7 +25,7 @@ jobs:
           name: Prepare shell commands
           # shell chmod +x 赋予执行权限
           # 执行shell脚本
-          command: chmod +x scripts/scpExeShell.sh
+          command: chmod +x scripts/deploy.sh
       - run:
           name: Run Deploy to HWServer
-          command: ./scripts/scpExeShell.sh
+          command: ./scripts/deploy.sh
