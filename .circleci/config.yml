@@ -9,7 +9,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "b3:67:3b:9a:0b:58:12:5f:9f:05:de:11:76:01:30:4f"
+            - "56:e5:64:2a:56:37:10:6d:a2:72:0d:aa:ed:ae:d7:7f"
       - checkout
       - restore_cache:
           keys:
@@ -26,4 +26,5 @@ jobs:
           command: yarn build:prod
       - run:
           name: Run Deploy to HWServer
-          command: scp -r "../${siteSource}/." server@139.159.201.22:/root/www/ExamManagement
+          command: |
+            ssh $SSH_USER@$SSH_HOST "scp -r '../${siteSource}/.' root@139.159.201.22:/root/www/ExamManagement"
