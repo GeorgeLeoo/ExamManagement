@@ -8,8 +8,8 @@ jobs:
         - master
     steps:
       - add_ssh_keys:
-        fingerprints:
-          - "b3:67:3b:9a:0b:58:12:5f:9f:05:de:11:76:01:30:4f"
+          fingerprints:
+            - "b3:67:3b:9a:0b:58:12:5f:9f:05:de:11:76:01:30:4f"
       - checkout
       - restore_cache:
           keys:
