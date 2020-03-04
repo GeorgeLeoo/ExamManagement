@@ -2,7 +2,7 @@
 
 set timeout 1000
 
-spawn scp -r ./dist root@139.159.201.22:/root/www/ExamManagement
+spawn scp -r ./ExamManagement root@139.159.201.22:/root/www
 
  expect {
 
