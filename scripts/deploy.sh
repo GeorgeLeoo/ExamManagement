@@ -38,6 +38,8 @@ fi
 echo "../${siteSource}/."
 # 把构建好的文件目录给拷贝进来
 cp -a "../${siteSource}/." .
+# 拷贝到服务器
+scp -r "../${siteSource}/." server@139.159.201.22:/root/www/ExamManagement
 
 ls -la
 
