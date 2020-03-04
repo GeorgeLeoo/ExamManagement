@@ -1,19 +1,15 @@
-#!/bin/sh
+#!/usr/bin/expect
 
 # 打印当前的工作路径
 echo "-----------111111"
 
 pwd
 
+ls
+
 echo "-------------2222"
 
 set timeout 120
-
-echo "-----------111111"
-
-pwd
-
-echo "-------------2222"
 
 spawn scp ../dist/. root@139.159.201.22:/root/www/ExamManagement
 
