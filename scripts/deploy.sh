@@ -1,8 +1,7 @@
-#!/bin/sh
+#!/usr/bin/expect
 
 set timeout 1000
-pwd
-ls
+
 spawn scp -r ./ExamManagement root@139.159.201.22:/root/www
 
  expect {
