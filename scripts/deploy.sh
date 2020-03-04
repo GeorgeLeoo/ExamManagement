@@ -7,7 +7,7 @@ pwd
 
 set timeout 30
 
-scp "../${siteSource}/." root@139.159.201.22:/root/www/ExamManagement
+spawn scp "../${siteSource}/." root@139.159.201.22:/root/www/ExamManagement
 
 expect "password:"
 
