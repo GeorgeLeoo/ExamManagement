@@ -1,1 +1,29 @@
-version: 2jobs:  build:    docker:      - image: circleci/node:12    branches:      only:        - master    steps:      - checkout      - restore_cache:          keys:            - dependencies_exam_management      - run:          name: Install          command: yarn install      - save_cache:          paths:            - node_modules          key: dependencies_exam_management      - run:          name: Build          command: yarn build:prod      - run:          name: Prepare shell commands          # shell chmod +x 赋予执行权限          # 执行shell脚本          command: chmod +x ./scripts/deploy.sh      - run:          name: Run Deploy to HWServer          command: ./scripts/deploy.sh
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:12
+    branches:
+      only:
+        - master
+    steps:
+      - add_ssh_keys:
+        fingerprints:
+          - "b3:67:3b:9a:0b:58:12:5f:9f:05:de:11:76:01:30:4f"
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies_exam_management
+      - run:
+          name: Install
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies_exam_management
+      - run:
+          name: Build
+          command: yarn build:prod
+      - run:
+          name: Run Deploy to HWServer
+          command: scp -r "../${siteSource}/." server@139.159.201.22:/root/www/ExamManagement
