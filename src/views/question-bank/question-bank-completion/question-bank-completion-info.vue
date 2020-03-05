@@ -294,7 +294,6 @@ export default class extends Vue {
      */
     handleCancel() {
       this.dialogVisible = false
-      this.completionItem = {}
     }
 }
 </script>
