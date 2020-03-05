@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { ICreateOrUpdateSubjectData, IDeleteParams, ISubjectParams } from '@/api/types'
+import { ICreateSubjectData, IDeleteParams, ISubjectParams, IUpdateSubjectData } from '@/api/types'
 import { subjects } from '@/api/urls'
 
 export const getSubjects = (params: ISubjectParams) =>
@@ -16,14 +16,14 @@ export const deleteSubject = (params: IDeleteParams) =>
     params
   })
 
-export const createSubject = (data: ICreateOrUpdateSubjectData) =>
+export const createSubject = (data: ICreateSubjectData) =>
   request({
     url: subjects,
     method: 'post',
     data
   })
 
-export const updateSubject = (data: ICreateOrUpdateSubjectData) =>
+export const updateSubject = (data: IUpdateSubjectData | {}) =>
   request({
     url: subjects,
     method: 'patch',

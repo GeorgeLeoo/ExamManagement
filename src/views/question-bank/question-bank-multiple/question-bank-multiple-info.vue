@@ -191,33 +191,51 @@
       :limit.sync="limit"
       @pagination="getList"
     />
+    <DialogQuestionBank
+      v-if="dialogVisible"
+      :data="multipleItem"
+      :dialog-type="dialogType"
+      :bank-type="1"
+      @cancel="handleCancel"
+      @fetch="handleFetch"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { getMultiples } from '@/api/questions'
-import { IQuestionParams } from '@/api/types'
+import { deleteMultiple, getMultiples } from '@/api/questions'
+import { IDeleteParams, IQuestionParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
+import DialogQuestionBank from '@/components/DialogQuestionBank/index.vue'
+import { deepClone } from '@/utils'
 
   @Component({
     name: 'QuestionBankMultipleInfo',
     components: {
-      Pagination
+      Pagination,
+      DialogQuestionBank
     }
   })
 
 export default class extends Vue {
     private tableKey: Number = 0;
+    private dialogVisible: boolean = false;
     private exportCurrentPageLoading: boolean = false;
     private exportAllPageLoading: boolean = false;
     private listLoading: boolean = false;
     private questionBanksList = []
+    private multipleItem:any = {
+      difficulty: 0,
+      correctAnswer: []
+    }
     private question = ''
     private subject = ''
     private page = 1;
     private limit = 10;
     private total = 0;
+    // -1：默认，0：添加，1：编辑
+    private dialogType = -1;
 
     private params: IQuestionParams = {
       page: this.page,
@@ -226,6 +244,11 @@ export default class extends Vue {
 
     created() {
       this.getMultiples()
+    }
+
+    handleFetch() {
+      this.handleFilter()
+      this.dialogVisible = false
     }
 
     private async getMultiples() {
@@ -250,15 +273,47 @@ export default class extends Vue {
       this.getMultiples()
     }
 
-    handleCreate() {}
+    /**
+     * 添加
+     */
+    handleCreate() {
+      this.multipleItem.correctAnswer = []
+      this.dialogVisible = true
+      this.dialogType = 0
+    }
 
     handleExportCurrentPage() {}
 
     handleExportAllPage() {}
 
-    handleModify(row: any, status: Number) {}
+    handleModify(row: any, status: Number) {
+      this.dialogType = 1
+      this.dialogVisible = true
+      this.multipleItem = deepClone(row)
+    }
 
-    handleDelete(row: any, status: Number) {}
+    async handleDelete(row: any) {
+      const data: IDeleteParams = {
+        _id: row._id
+      }
+      const res = await deleteMultiple(data)
+      if (res.data === 'success') {
+        this.getMultiples()
+        this.$message({
+          type: 'success',
+          duration: 3 * 1000,
+          message: '删除成功'
+        })
+      }
+    }
+
+    /**
+     * 取消
+     */
+    handleCancel() {
+      this.dialogVisible = false
+      this.multipleItem = {}
+    }
 }
 </script>
 

@@ -160,33 +160,51 @@
       :limit.sync="limit"
       @pagination="getList"
     />
+
+    <DialogQuestionBank
+      v-if="dialogVisible"
+      :data="judgeItem"
+      :dialog-type="dialogType"
+      :bank-type="2"
+      @cancel="handleCancel"
+      @fetch="handleFetch"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { getJudges } from '@/api/questions'
-import { IQuestionParams } from '@/api/types'
+import { deleteJudge, getJudges } from '@/api/questions'
+import { IDeleteParams, IQuestionParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
+import DialogQuestionBank from '@/components/DialogQuestionBank/index.vue'
+import { deepClone } from '@/utils'
 
   @Component({
     name: 'QuestionBankJudgeInfo',
     components: {
-      Pagination
+      Pagination,
+      DialogQuestionBank
     }
   })
 
 export default class extends Vue {
     private tableKey: Number = 0;
+    private dialogVisible: boolean = false;
     private exportCurrentPageLoading: boolean = false;
     private exportAllPageLoading: boolean = false;
     private listLoading: boolean = false;
     private questionBanksList = []
+    private judgeItem = {
+      difficulty: 0
+    }
     private question = ''
     private subject = ''
     private page = 1;
     private limit = 10;
     private total = 0;
+    // -1：默认，0：添加，1：编辑
+    private dialogType = -1;
 
     private params: IQuestionParams = {
       page: this.page,
@@ -195,6 +213,11 @@ export default class extends Vue {
 
     created() {
       this.getJudges()
+    }
+
+    handleFetch() {
+      this.handleFilter()
+      this.dialogVisible = false
     }
 
     private async getJudges() {
@@ -219,15 +242,46 @@ export default class extends Vue {
       this.getJudges()
     }
 
-    handleCreate() {}
+    /**
+     * 添加
+     */
+    handleCreate() {
+      this.dialogVisible = true
+      this.dialogType = 0
+    }
 
     handleExportCurrentPage() {}
 
     handleExportAllPage() {}
 
-    handleModify(row: any, status: Number) {}
+    handleModify(row: any) {
+      this.dialogType = 1
+      this.dialogVisible = true
+      this.judgeItem = deepClone(row)
+    }
 
-    handleDelete(row: any, status: Number) {}
+    async handleDelete(row: any) {
+      const data: IDeleteParams = {
+        _id: row._id
+      }
+      const res = await deleteJudge(data)
+      if (res.data === 'success') {
+        this.getJudges()
+        this.$message({
+          type: 'success',
+          duration: 3 * 1000,
+          message: '删除成功'
+        })
+      }
+    }
+
+    /**
+     * 取消
+     */
+    handleCancel() {
+      this.dialogVisible = false
+      this.judgeItem = {}
+    }
 }
 </script>
 

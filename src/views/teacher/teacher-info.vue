@@ -158,9 +158,17 @@
       <el-table-column
         :label="$t('operation')"
         align="center"
+        width="200"
         class-name="fixed-width"
       >
         <template slot-scope="{row}">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleModify(row)"
+          >
+            {{ $t('edit') }}
+          </el-button>
           <el-button
             v-if="row.status === 1"
             size="mini"
@@ -182,33 +190,48 @@
     </el-table>
 
     <pagination
-      v-if="total > limit"
+      v-if="total > params.limit"
       :total="total"
-      :page.sync="page"
-      :limit.sync="limit"
-      @pagination="getTeachers"
+      :page.sync="params.page"
+      :limit.sync="params.limit"
+      @pagination="getList"
     />
 
     <el-dialog
-      :visible.sync="dialogAddTeacherVisible"
+      :visible.sync="dialogVisible"
       :title="$t('teacher.dialogTitleAdd')"
       width="500px"
+      @close="handleCancel"
     >
       <el-form
         ref="form"
         label-width="70px"
       >
         <el-form-item :label="$t('teacher.no')">
-          <el-input v-model="no" />
+          <el-input v-model="teacherItem.no" />
         </el-form-item>
         <el-form-item :label="$t('teacher.name')">
-          <el-input v-model="name" />
+          <el-input v-model="teacherItem.name" />
         </el-form-item>
         <el-form-item :label="$t('teacher.gender')">
-          <el-radio-group v-model="gender">
-            <el-radio :label="$t('male')" />
-            <el-radio :label="$t('female')" />
+          <el-radio-group v-model="teacherItem.gender">
+            <el-radio
+              :label="0"
+            >
+              {{ $t('male') }}
+            </el-radio>
+            <el-radio
+              :label="1"
+            >
+              {{ $t('female') }}
+            </el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('teacher.email')">
+          <el-input v-model="teacherItem.email" />
+        </el-form-item>
+        <el-form-item :label="$t('teacher.phone')">
+          <el-input v-model="teacherItem.phone" />
         </el-form-item>
       </el-form>
       <span
@@ -216,11 +239,11 @@
         class="dialog-footer"
       >
         <el-button
-          @click="dialogAddTeacherVisible = false"
+          @click="handleCancel"
         >{{ $t('cancel') }}</el-button>
         <el-button
           type="primary"
-          @click="dialogAddTeacherVisible = false"
+          @click="handleOk"
         >{{ $t('ok') }}</el-button>
       </span>
     </el-dialog>
@@ -229,9 +252,16 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { ITeacherParams } from '@/api/types'
-import { getTeachers } from '@/api/teachers'
+import {
+  ICreateTeachersData,
+  IPage,
+  ITeacherParams, IUpdateTeacherData, IUpdateTeacherStatusData
+} from '@/api/types'
+import { createTeachers, getAllTeachers, getTeachers, updateTeacher, updateTeacherStatus } from '@/api/teachers'
 import Pagination from '@/components/Pagination/index.vue'
+import { deepClone, formatJson } from '@/utils'
+import { isValidEmail, isValidGender, isValidName, isValidNo, isValidPhone } from '@/utils/validate'
+import { exportJson2Excel } from '@/utils/excel'
 
 @Component({
   name: 'TeacherInfo',
@@ -241,28 +271,36 @@ import Pagination from '@/components/Pagination/index.vue'
 })
 
 export default class extends Vue {
-  private dialogAddTeacherVisible = false
+  private dialogVisible = false
   private tableKey: Number = 0
   private exportCurrentPageLoading: boolean = false
   private exportAllPageLoading: boolean = false
   private listLoading: boolean = false
   private teachersList = []
+  private teacherItem: any = {}
   private no = ''
   private name = ''
   private gender = ''
-  private page = 1;
-  private limit = 10;
   private total = 0;
+  // -1：默认，0：添加，1：编辑
+  private dialogType = -1;
+
+  private filename = new Date().toLocaleDateString()
+  private autoWidth = true
+  private bookType = 'xlsx'
 
   private params: ITeacherParams = {
-    page: this.page,
-    limit: this.limit
+    page: 1,
+    limit: 10
   }
 
   created() {
     this.getTeachers()
   }
 
+  /**
+   * 公告教师获取
+   */
   private async getTeachers() {
     if (this.no) {
       Object.assign(this.params, { no: this.no })
@@ -280,19 +318,172 @@ export default class extends Vue {
     this.listLoading = false
   }
 
+  /**
+   * 搜索
+   */
   handleFilter() {
     this.getTeachers()
   }
 
-  handleCreate() {
-    this.dialogAddTeacherVisible = true
+  /**
+   * 分页
+   */
+  getList({ page }: IPage) {
+    this.params.page = page
+    this.getTeachers()
   }
 
-  handleExportCurrentPage() {}
+  handleCreate() {
+    this.dialogVisible = true
+    this.dialogType = 0
+  }
 
-  handleExportAllPage() {}
+  /**
+   * 取消
+   */
+  handleCancel() {
+    this.dialogVisible = false
+    this.teacherItem = {}
+  }
 
-  handleModifyStatus(row: any, status: Number) {}
+  /**
+   * 弹出框确定
+   */
+  async handleOk() {
+    if (!isValidNo(this.teacherItem.no)) {
+      this.$message({
+        type: 'warning',
+        duration: 3 * 1000,
+        message: '工号不能为空'
+      })
+      return
+    }
+    if (!isValidName(this.teacherItem.name)) {
+      this.$message({
+        type: 'warning',
+        duration: 3 * 1000,
+        message: '姓名不能为空'
+      })
+      return
+    }
+    if (!isValidGender(this.teacherItem.gender)) {
+      this.$message({
+        type: 'warning',
+        duration: 3 * 1000,
+        message: '请选择性别'
+      })
+      return
+    }
+    if (!isValidEmail(this.teacherItem.email)) {
+      this.$message({
+        type: 'warning',
+        duration: 3 * 1000,
+        message: '请输入正确的邮箱'
+      })
+      return
+    }
+    if (!isValidPhone(this.teacherItem.phone)) {
+      this.$message({
+        type: 'warning',
+        duration: 3 * 1000,
+        message: '请输入正确的手机号'
+      })
+      return
+    }
+    let res: any
+    let message = ''
+    let base = {
+      no: this.teacherItem.no,
+      name: this.teacherItem.name,
+      gender: this.teacherItem.gender,
+      email: this.teacherItem.email,
+      phone: this.teacherItem.phone
+    }
+    if (this.dialogType === 0) {
+      const body: ICreateTeachersData = base
+      message = '添加成功'
+      res = await createTeachers(body)
+    } else if (this.dialogType === 1) {
+      const body: IUpdateTeacherData | {} = {}
+      Object.assign(body, base, { _id: this.teacherItem._id })
+      message = '更新成功'
+      res = await updateTeacher(body)
+    }
+    this.dialogVisible = false
+    this.handleFilter()
+    this.$message({
+      type: 'success',
+      duration: 3 * 1000,
+      message
+    })
+  }
+
+  /**
+   * 下载数据
+   */
+  handleDownload(obj: any) {
+    const tHeader = ['工号', '姓名', '性别', '邮箱', '手机号', '注册时间', '创建时间']
+    const filterVal = ['no', 'name', 'gender', 'email', 'phone', 'signUpAt', 'createdAt']
+    const data = formatJson(filterVal, obj)
+    exportJson2Excel(tHeader, data, this.filename !== '' ? this.filename : undefined, undefined, undefined, this.autoWidth, this.bookType)
+  }
+
+  /**
+   * 导出当前页
+   */
+  handleExportCurrentPage() {
+    this.exportCurrentPageLoading = true
+    this.handleDownload(this.teachersList)
+    this.exportCurrentPageLoading = false
+  }
+
+  /**
+   * 导出所有页
+   */
+  async handleExportAllPage() {
+    this.exportAllPageLoading = true
+    const res = await getAllTeachers()
+    this.handleDownload(res.data.list)
+    this.exportAllPageLoading = false
+  }
+
+  /**
+   * 修改账号状态
+   * @param row
+   * @param status
+   */
+  async handleModifyStatus(row: any, status: number) {
+    const body: IUpdateTeacherStatusData = {
+      _id: row._id,
+      status: status
+    }
+    let res = await updateTeacherStatus(body)
+    if (res.data === 'success') {
+      this.handleFilter()
+      this.dialogVisible = false
+      this.$message({
+        type: 'success',
+        duration: 3 * 1000,
+        message: '操作成功'
+      })
+    } else {
+      this.$message({
+        type: 'error',
+        duration: 3 * 1000,
+        message: res.data
+      })
+    }
+  }
+
+  /**
+   * 更新学生信息
+   * @param row
+   */
+  handleModify(row: any) {
+    this.dialogType = 1
+    this.dialogVisible = true
+    this.teacherItem = deepClone(row)
+  }
 }
 </script>
 

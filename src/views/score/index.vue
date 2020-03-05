@@ -121,6 +121,26 @@
         </template>
       </el-table-column>
       <el-table-column
+        :label="$t('score.status')"
+        prop="status"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <el-tag
+            v-if="scope.row.status === 0"
+            type="success"
+          >
+            {{ scope.row.status | paperStatusFilter }}
+          </el-tag>
+          <el-tag
+            v-if="scope.row.status === 1"
+            type="danger"
+          >
+            {{ scope.row.status | paperStatusFilter }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
         :label="$t('operation')"
         align="center"
         class-name="fixed-width"
@@ -131,17 +151,17 @@
             type="text"
             @click="handleShowPaper(row, 1)"
           >
-            {{ $t('score.showPaper') }}
+            {{ $t('score.showAnswer') }}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > params.limit"
       :total="total"
-      :page.sync="page"
-      :limit.sync="limit"
+      :page.sync="params.page"
+      :limit.sync="params.limit"
       @pagination="getList"
     />
   </div>
@@ -149,9 +169,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { IScoreParams } from '@/api/types'
+import { IPage, IScoreParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
-import { getScores } from '@/api/scores'
+import { getAllScores, getScores } from '@/api/scores'
+import { formatJson } from '@/utils'
+import { exportJson2Excel } from '@/utils/excel'
 
   @Component({
     name: 'Score',
@@ -168,13 +190,15 @@ export default class extends Vue {
     private scoresList = [];
     private no = ''
     private name = ''
-    private page = 1;
-    private limit = 10;
     private total = 0;
 
+    private filename = new Date().toLocaleDateString()
+    private autoWidth = true
+    private bookType = 'xlsx'
+
     private params: IScoreParams = {
-      page: this.page,
-      limit: this.limit
+      page: 1,
+      limit: 10
     }
 
     created() {
@@ -199,15 +223,41 @@ export default class extends Vue {
       this.getScores()
     }
 
-    getList() {
+    getList({ page }: IPage) {
+      this.params.page = page
       this.getScores()
     }
 
     handleCreate() {}
 
-    handleExportCurrentPage() {}
+    /**
+     * 下载数据
+     */
+    handleDownload(obj: any) {
+      const tHeader = ['学号', '姓名', '试卷名称', '分数', '开始考试时间', '结束考试时间', '总耗时']
+      const filterVal = ['no', 'name', 'paperName', 'score', 'startTime', 'endTime', 'diffTime']
+      const data = formatJson(filterVal, obj)
+      exportJson2Excel(tHeader, data, this.filename !== '' ? this.filename : undefined, undefined, undefined, this.autoWidth, this.bookType)
+    }
 
-    handleExportAllPage() {}
+    /**
+     * 导出当前页
+     */
+    handleExportCurrentPage() {
+      this.exportCurrentPageLoading = true
+      this.handleDownload(this.scoresList)
+      this.exportCurrentPageLoading = false
+    }
+
+    /**
+     * 导出所有页
+     */
+    async handleExportAllPage() {
+      this.exportAllPageLoading = true
+      const res = await getAllScores()
+      this.handleDownload(res.data.list)
+      this.exportAllPageLoading = false
+    }
 
     handleShowPaper(row: any, status: Number) {}
 }

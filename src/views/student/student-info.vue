@@ -158,9 +158,17 @@
       <el-table-column
         :label="$t('operation')"
         align="center"
+        width="200"
         class-name="fixed-width"
       >
         <template slot-scope="{row}">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleModify(row)"
+          >
+            {{ $t('edit') }}
+          </el-button>
           <el-button
             v-if="row.status === 1"
             size="mini"
@@ -182,33 +190,48 @@
     </el-table>
 
     <pagination
-      v-if="total > limit"
+      v-if="total > params.limit"
       :total="total"
-      :page.sync="page"
-      :limit.sync="limit"
-      @pagination="getStudents"
+      :page.sync="params.page"
+      :limit.sync="params.limit"
+      @pagination="getList"
     />
 
     <el-dialog
-      :visible.sync="dialogAddTeacherVisible"
+      :visible.sync="dialogVisible"
       :title="$t('student.dialogTitleAdd')"
       width="500px"
+      @close="handleCancel"
     >
       <el-form
         ref="form"
         label-width="70px"
       >
         <el-form-item :label="$t('student.no')">
-          <el-input v-model="no" />
+          <el-input v-model="studentItem.no" />
         </el-form-item>
         <el-form-item :label="$t('student.name')">
-          <el-input v-model="name" />
+          <el-input v-model="studentItem.name" />
         </el-form-item>
         <el-form-item :label="$t('student.gender')">
-          <el-radio-group v-model="gender">
-            <el-radio :label="$t('male')" />
-            <el-radio :label="$t('female')" />
+          <el-radio-group v-model="studentItem.gender">
+            <el-radio
+              :label="0"
+            >
+              {{ $t('male') }}
+            </el-radio>
+            <el-radio
+              :label="1"
+            >
+              {{ $t('female') }}
+            </el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('student.email')">
+          <el-input v-model="studentItem.email" />
+        </el-form-item>
+        <el-form-item :label="$t('student.phone')">
+          <el-input v-model="studentItem.phone" />
         </el-form-item>
       </el-form>
       <span
@@ -216,11 +239,11 @@
         class="dialog-footer"
       >
         <el-button
-          @click="dialogAddTeacherVisible = false"
+          @click="handleCancel"
         >{{ $t('cancel') }}</el-button>
         <el-button
           type="primary"
-          @click="dialogAddTeacherVisible = false"
+          @click="handleOk"
         >{{ $t('ok') }}</el-button>
       </span>
     </el-dialog>
@@ -229,9 +252,16 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { IStudentParams } from '@/api/types'
-import { getStudents } from '@/api/students'
+import {
+  ICreateStudentsData,
+  IPage,
+  IStudentParams, IUpdateStudentData, IUpdateStudentStatusData
+} from '@/api/types'
+import { createStudents, getAllStudents, getStudents, updateStudent, updateStudentStatus } from '@/api/students'
 import Pagination from '@/components/Pagination/index.vue'
+import { deepClone, formatJson } from '@/utils'
+import { isValidEmail, isValidGender, isValidName, isValidNo, isValidPhone } from '@/utils/validate'
+import { exportJson2Excel } from '@/utils/excel'
 
   @Component({
     name: 'StudentInfo',
@@ -241,28 +271,36 @@ import Pagination from '@/components/Pagination/index.vue'
   })
 
 export default class extends Vue {
-    private dialogAddTeacherVisible = false
+    private dialogVisible = false
     private tableKey: Number = 0
     private exportCurrentPageLoading: boolean = false
     private exportAllPageLoading: boolean = false
     private listLoading: boolean = false
     private studentsList = []
+    private studentItem: any = {}
     private no = ''
     private name = ''
     private gender = ''
-    private page = 1;
-    private limit = 10;
     private total = 0;
+    // -1：默认，0：添加，1：编辑
+    private dialogType = -1;
+
+    private filename = new Date().toLocaleDateString()
+    private autoWidth = true
+    private bookType = 'xlsx'
 
     private params: IStudentParams = {
-      page: this.page,
-      limit: this.limit
+      page: 1,
+      limit: 10
     }
 
     created() {
       this.getStudents()
     }
 
+    /**
+     * 公告学生获取
+     */
     private async getStudents() {
       if (this.no) {
         Object.assign(this.params, { no: this.no })
@@ -280,19 +318,183 @@ export default class extends Vue {
       this.listLoading = false
     }
 
+    /**
+     * 搜索
+     */
     handleFilter() {
       this.getStudents()
     }
 
-    handleCreate() {
-      this.dialogAddTeacherVisible = true
+    /**
+     * 分页
+     */
+    getList({ page }: IPage) {
+      this.params.page = page
+      this.getStudents()
     }
 
-    handleExportCurrentPage() {}
+    /**
+     * 添加
+     */
+    handleCreate() {
+      this.dialogVisible = true
+      this.dialogType = 0
+    }
 
-    handleExportAllPage() {}
+    /**
+     * 取消
+     */
+    handleCancel() {
+      this.dialogVisible = false
+      this.studentItem = {}
+    }
 
-    handleModifyStatus(row: any, status: Number) {}
+    /**
+     * 弹出框确定
+     */
+    async handleOk() {
+      if (!isValidNo(this.studentItem.no)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '学号不能为空'
+        })
+        return
+      }
+      if (!isValidName(this.studentItem.name)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '姓名不能为空'
+        })
+        return
+      }
+      if (!isValidGender(this.studentItem.gender)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '请选择性别'
+        })
+        return
+      }
+      if (!isValidEmail(this.studentItem.email)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '请输入正确的邮箱'
+        })
+        return
+      }
+      if (!isValidPhone(this.studentItem.phone)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '请输入正确的手机号'
+        })
+        return
+      }
+      let res: any
+      let message = ''
+      let base = {
+        no: this.studentItem.no,
+        name: this.studentItem.name,
+        gender: this.studentItem.gender,
+        email: this.studentItem.email,
+        phone: this.studentItem.phone
+      }
+      if (this.dialogType === 0) {
+        const body: ICreateStudentsData = base
+        message = '添加成功'
+        res = await createStudents(body)
+      } else if (this.dialogType === 1) {
+        const body: IUpdateStudentData | {} = {}
+        Object.assign(body, base, { _id: this.studentItem._id })
+        message = '更新成功'
+        res = await updateStudent(body)
+      }
+      if (res.data === 'success') {
+        this.handleFilter()
+        this.dialogVisible = false
+        this.$message({
+          type: 'success',
+          duration: 3 * 1000,
+          message
+        })
+      } else {
+        this.$message({
+          type: 'error',
+          duration: 3 * 1000,
+          message: res.data
+        })
+      }
+    }
+
+    /**
+     * 下载数据
+     */
+    handleDownload(obj: any) {
+      const tHeader = ['学号', '姓名', '性别', '邮箱', '手机号', '注册时间', '创建时间']
+      const filterVal = ['no', 'name', 'gender', 'email', 'phone', 'signUpAt', 'createdAt']
+      const data = formatJson(filterVal, obj)
+      exportJson2Excel(tHeader, data, this.filename !== '' ? this.filename : undefined, undefined, undefined, this.autoWidth, this.bookType)
+    }
+
+    /**
+     * 导出当前页
+     */
+    handleExportCurrentPage() {
+      this.exportCurrentPageLoading = true
+      this.handleDownload(this.studentsList)
+      this.exportCurrentPageLoading = false
+    }
+
+    /**
+     * 导出所有页
+     */
+    async handleExportAllPage() {
+      this.exportAllPageLoading = true
+      const res = await getAllStudents()
+      this.handleDownload(res.data.list)
+      this.exportAllPageLoading = false
+    }
+
+    /**
+     * 修改账号状态
+     * @param row
+     * @param status
+     */
+    async handleModifyStatus(row: any, status: number) {
+      const body: IUpdateStudentStatusData = {
+        _id: row._id,
+        status: status
+      }
+      let res = await updateStudentStatus(body)
+      if (res.data === 'success') {
+        this.handleFilter()
+        this.dialogVisible = false
+        this.$message({
+          type: 'success',
+          duration: 3 * 1000,
+          message: '操作成功'
+        })
+      } else {
+        this.$message({
+          type: 'error',
+          duration: 3 * 1000,
+          message: res.data
+        })
+      }
+    }
+
+    /**
+     * 更新学生信息
+     * @param row
+     */
+    handleModify(row: any) {
+      this.dialogType = 1
+      this.dialogVisible = true
+      this.studentItem = deepClone(row)
+    }
 }
 </script>
 

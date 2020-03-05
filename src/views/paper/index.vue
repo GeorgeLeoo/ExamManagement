@@ -155,7 +155,17 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.paperType | paperTypeFilter }}</span>
+          <el-tag
+            v-if="scope.row.paperType === 1"
+          >
+            {{ scope.row.paperType | paperTypeFilter }}
+          </el-tag>
+          <el-tag
+            v-if="scope.row.paperType === 0"
+            type="danger"
+          >
+            {{ scope.row.paperType | paperTypeFilter }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -190,10 +200,17 @@
       <el-table-column
         :label="$t('operation')"
         align="center"
-        width="150"
+        width="250"
         fixed="right"
       >
         <template slot-scope="{row}">
+          <el-button
+            size="mini"
+            type="success"
+            @click="handleModifyStatus(row, 0)"
+          >
+            {{ $t('paper.showPaper') }}
+          </el-button>
           <el-button
             size="mini"
             type="primary"
@@ -204,7 +221,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleModifyStatus(row, 1)"
+            @click="handleDelete(row)"
           >
             {{ $t('delete') }}
           </el-button>
@@ -224,9 +241,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { IScoreParams } from '@/api/types'
+import { IDeleteParams, IScoreParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
-import { getPapers } from '@/api/papers'
+import { deletePaper, getPapers } from '@/api/papers'
 
   @Component({
     name: 'Paper',
@@ -289,6 +306,37 @@ export default class extends Vue {
     handleExportAllPage() {}
 
     handleModifyStatus(row: any, status: Number) {}
+
+    /**
+     * 删除显示警告
+     * @param row
+     */
+    handleDelete(row: any) {
+      this.$confirm('此操作将永久删除此条信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deletePaper(row._id)
+      }).catch(() => {
+      })
+    }
+
+    /**
+     * 删除
+     * @param _id
+     */
+    async deletePaper(_id: string) {
+      const body: IDeleteParams = {
+        _id
+      }
+      await deletePaper(body)
+      this.handleFilter()
+      this.$message({
+        type: 'success',
+        message: '删除成功!'
+      })
+    }
 }
 </script>
 

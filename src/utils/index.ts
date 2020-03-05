@@ -1,5 +1,5 @@
 // Parse the time to string
-import Obj = echarts.EChartOption.Tooltip.Position.Obj;
+import { genderStatusFilter } from '@/filters'
 
 export const parseTime = (
   time?: object | string | number,
@@ -44,8 +44,10 @@ export const parseTime = (
 // Format and filter json data using filterKeys array
 export const formatJson = (filterKeys: any, jsonData: any) =>
   jsonData.map((data: any) => filterKeys.map((key: string) => {
-    if (key === 'timestamp') {
+    if (key === 'signUpAt' || key === 'createdAt' || key === 'startTime' || key === 'endTime' || key === 'diffTime') {
       return parseTime(data[key])
+    } else if (key === 'gender') {
+      return genderStatusFilter(data[key])
     } else {
       return data[key]
     }

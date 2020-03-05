@@ -107,10 +107,10 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > params.limit"
       :total="total"
-      :page.sync="page"
-      :limit.sync="limit"
+      :page.sync="params.page"
+      :limit.sync="params.limit"
       @pagination="getList"
     />
 
@@ -152,13 +152,14 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { createNotice, deleteNoticeById, getNotices, updateNotice } from '@/api/notices'
 import {
-  ICreateOrUpdateNoticeData,
+  ICreateNoticeData,
   IDeleteParams,
   INoticeParams,
-  IPage
+  IPage, IUpdateNoticeData
 } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
 import { deepClone } from '@/utils'
+import { isValidNotice } from '@/utils/validate'
 
   @Component({
     name: 'Notice',
@@ -177,15 +178,13 @@ export default class extends Vue {
     private content = ''
     private noticeItem: any = {}
     private author = ''
-    private page: number = 1;
-    private limit = 10;
     private total = 0;
     // -1：默认，0：添加，1：编辑
     private dialogType = -1;
 
     private params: INoticeParams = {
-      page: this.page,
-      limit: this.limit
+      page: 1,
+      limit: 10
     }
 
     created() {
@@ -220,7 +219,7 @@ export default class extends Vue {
      * 分页
      */
     getList({ page }: IPage) {
-      this.page = page
+      this.params.page = page
       this.getNotices()
     }
 
@@ -231,16 +230,6 @@ export default class extends Vue {
       this.dialogNoticeVisible = true
       this.dialogType = 0
     }
-
-    /**
-     * 导出当前页
-     */
-    handleExportCurrentPage() {}
-
-    /**
-     * 导出所有页
-     */
-    handleExportAllPage() {}
 
     /**
      * 取消
@@ -265,16 +254,26 @@ export default class extends Vue {
      * 弹出框确定
      */
     async handleOk() {
-      const body: ICreateOrUpdateNoticeData = {
-        content: this.noticeItem,
-        _id: this.noticeItem._id
+      if (!isValidNotice(this.noticeItem.no)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '公告不能为空'
+        })
+        return
+      }
+      const base = {
+        content: this.noticeItem.content
       }
       let res: any
       let message = ''
       if (this.dialogType === 0) {
+        const body: ICreateNoticeData = base
         message = '添加成功'
         res = await createNotice(body)
       } else if (this.dialogType === 1) {
+        const body: IUpdateNoticeData | {} = {}
+        Object.assign(body, base, { _id: this.noticeItem._id })
         message = '更新成功'
         res = await updateNotice(body)
       }
