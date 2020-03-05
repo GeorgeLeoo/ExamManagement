@@ -108,9 +108,11 @@ export default {
   downloadTemplateTip: 'Drag the file here, or',
   download: 'download',
   teacher: {
-    ph_no: 'please enter No.',
-    ph_name: 'please enter name',
-    ph_gender: 'please select gender',
+    ph_no: 'Please enter No.',
+    ph_name: 'Please enter name',
+    ph_gender: 'Please select gender',
+    ph_email: 'Please enter email',
+    ph_phone: 'Please enter phone',
     select_genders: [
       {
         text: 'All',
@@ -146,6 +148,8 @@ export default {
     ph_no: 'please enter No.',
     ph_name: 'please enter name',
     ph_gender: 'please select gender',
+    ph_email: 'Please enter email',
+    ph_phone: 'Please enter phone',
     select_genders: [
       {
         text: 'All',
@@ -217,6 +221,7 @@ export default {
     judgeScore: 'TrueOrFalseScore',
     completeScore: 'CompleteScore',
     afqScore: 'AFQScore',
+    showPaper: 'ShowPaper',
     questionNumber: 'QuestionNumber'
   },
   score: {
@@ -229,11 +234,14 @@ export default {
     startTime: 'StartTime',
     endTime: 'EndTime',
     diffTime: 'TimeConsuming',
-    showPaper: 'ShowPaper',
+    showAnswer: 'ShowAnswerSheet',
+    status: 'Status',
     exportCurrentPage: 'ExportCurrentPage',
     exportAllPage: 'ExportAllPage'
   },
   questionBank: {
+    dialogTitleModify: 'QuestionModify',
+    dialogTitleAdd: 'QuestionAdd',
     ph_question: 'Please enter the question',
     ph_subject: 'Please select subject',
     question: 'Question',
@@ -244,10 +252,10 @@ export default {
     knowledgePoint: 'KnowledgePoint',
     picture: 'Picture',
     author: 'Author',
-    a: 'A',
-    b: 'B',
-    c: 'C',
-    d: 'D'
+    a: 'Option A',
+    b: 'Option B',
+    c: 'Option C',
+    d: 'Option D'
   },
   navbar: {
     logOut: 'Log Out',

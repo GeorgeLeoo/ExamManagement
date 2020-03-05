@@ -176,7 +176,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(row, 1)"
+            @click="handleDelete(row)"
           >
             {{ $t('delete') }}
           </el-button>
@@ -191,33 +191,51 @@
       :limit.sync="limit"
       @pagination="getList"
     />
+
+    <DialogQuestionBank
+      v-if="dialogVisible"
+      :data="singleItem"
+      :dialog-type="dialogType"
+      :bank-type="0"
+      @cancel="handleCancel"
+      @fetch="handleFetch"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { getSingles } from '@/api/questions'
-import { IQuestionParams } from '@/api/types'
+import { deleteSingle, getSingles } from '@/api/questions'
+import { IDeleteParams, IQuestionParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
+import DialogQuestionBank from '@/components/DialogQuestionBank/index.vue'
+import { deepClone } from '@/utils'
 
   @Component({
     name: 'QuestionBankSingleInfo',
     components: {
+      DialogQuestionBank,
       Pagination
     }
   })
 
 export default class extends Vue {
     private tableKey: Number = 0;
+    private dialogVisible: boolean = false;
     private exportCurrentPageLoading: boolean = false;
     private exportAllPageLoading: boolean = false;
     private listLoading: boolean = false;
     private questionBanksList = []
+    private singleItem = {
+      difficulty: 0
+    }
     private question = ''
     private subject = ''
     private page = 1;
     private limit = 10;
     private total = 0;
+    // -1：默认，0：添加，1：编辑
+    private dialogType = -1;
 
     private params: IQuestionParams = {
       page: this.page,
@@ -226,6 +244,11 @@ export default class extends Vue {
 
     created() {
       this.getSingles()
+    }
+
+    handleFetch() {
+      this.handleFilter()
+      this.dialogVisible = false
     }
 
     private async getSingles() {
@@ -250,15 +273,63 @@ export default class extends Vue {
       this.getSingles()
     }
 
-    handleCreate() {}
+    /**
+     * 添加
+     */
+    handleCreate() {
+      this.dialogVisible = true
+      this.dialogType = 0
+    }
+
+    /**
+     * 取消
+     */
+    handleCancel() {
+      this.dialogVisible = false
+    }
+
+    /**
+     * 取消
+     */
+    handleOk() {
+    }
 
     handleExportCurrentPage() {}
 
     handleExportAllPage() {}
 
-    handleModify(row: any, status: Number) {}
+    /**
+     * 更新学生信息
+     * @param row
+     */
+    handleModify(row: any) {
+      this.dialogType = 1
+      this.singleItem = deepClone(row)
+      this.dialogVisible = true
+    }
 
-    handleDelete(row: any, status: Number) {}
+    async handleDelete(row: any) {
+      const data: IDeleteParams = {
+        _id: row._id
+      }
+      const res = await deleteSingle(data)
+      if (res.data === 'success') {
+        this.getSingles()
+        this.$message({
+          type: 'success',
+          duration: 3 * 1000,
+          message: '删除成功'
+        })
+      }
+    }
+
+    handleAvatarSuccess(res:any, file:any) {
+    }
+    beforeAvatarUpload(file: any) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      return isJPG && isLt2M
+    }
 }
 </script>
 
@@ -266,6 +337,35 @@ export default class extends Vue {
   .question-bank-single-info {
     .table-expand-content{
       color: #606266;
+    }
+    .rate-wrapper {
+      padding-top: 7px;
+    }
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+      border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      line-height: 178px;
+      text-align: center;
+    }
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+    .el-dialog {
+      margin-top: 0!important;
     }
   }
 </style>

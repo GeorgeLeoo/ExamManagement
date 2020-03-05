@@ -1,5 +1,11 @@
 import request from '@/utils/request'
-import { ICreateOrUpdateTeachersData, IDeleteParams, ITeacherParams } from '@/api/types'
+import {
+  ICreateTeachersData,
+  IDeleteParams,
+  ITeacherParams,
+  IUpdateTeacherData,
+  IUpdateTeacherStatusData
+} from '@/api/types'
 import { teachers } from '@/api/urls'
 
 export const getTeachers = (params: ITeacherParams) =>
@@ -9,6 +15,12 @@ export const getTeachers = (params: ITeacherParams) =>
     params
   })
 
+export const getAllTeachers = () =>
+  request({
+    url: `${teachers}/all`,
+    method: 'get'
+  })
+
 export const deleteTeachers = (params: IDeleteParams) =>
   request({
     url: teachers,
@@ -16,16 +28,23 @@ export const deleteTeachers = (params: IDeleteParams) =>
     params
   })
 
-export const createTeachers = (data: ICreateOrUpdateTeachersData) =>
+export const createTeachers = (data: ICreateTeachersData) =>
   request({
     url: teachers,
     method: 'post',
     data
   })
 
-export const updateTeachers = (data: ICreateOrUpdateTeachersData) =>
+export const updateTeacher = (data: IUpdateTeacherData | {}) =>
   request({
     url: teachers,
     method: 'patch',
+    data
+  })
+
+export const updateTeacherStatus = (data: IUpdateTeacherStatusData) =>
+  request({
+    url: `${teachers}/status`,
+    method: 'put',
     data
   })

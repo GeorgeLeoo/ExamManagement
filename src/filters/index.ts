@@ -1,4 +1,17 @@
 // Set utils function parseTime to filter
+import {
+  createAFQ,
+  createCompletion,
+  createJudge,
+  createMultiple,
+  createSingle,
+  updateAFQ,
+  updateCompletion,
+  updateJudge,
+  updateMultiple,
+  updateSingle
+} from '@/api/questions'
+
 export { parseTime } from '@/utils'
 
 // Filter for article status
@@ -46,4 +59,32 @@ export const trueOrFalseFilter = (type: number) => {
     1: '错误'
   }
   return statusMap[type]
+}
+
+export const paperStatusFilter = (status: number) => {
+  const statusMap: {[key: number]: string} = {
+    0: '已批改',
+    1: '未批改'
+  }
+  return statusMap[status]
+}
+
+export const questionFilter = (dialogType: number, bankType: number) => {
+  const questionMap: {[key:number]: Function}[] = [
+    {
+      0: createSingle,
+      1: createMultiple,
+      2: createJudge,
+      3: createCompletion,
+      4: createAFQ
+    },
+    {
+      0: updateSingle,
+      1: updateMultiple,
+      2: updateJudge,
+      3: updateCompletion,
+      4: updateAFQ
+    }
+  ]
+  return questionMap[dialogType][bankType]
 }

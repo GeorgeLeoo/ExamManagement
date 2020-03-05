@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { ICreateOrUpdateNoticeData, IDeleteParams, INoticeParams } from '@/api/types'
+import { ICreateNoticeData, IDeleteParams, INoticeParams, IUpdateNoticeData } from '@/api/types'
 import { notices } from '@/api/urls'
 
 export const getNotices = (params: INoticeParams) =>
@@ -16,14 +16,14 @@ export const deleteNoticeById = (params: IDeleteParams) =>
     params
   })
 
-export const createNotice = (data: ICreateOrUpdateNoticeData) =>
+export const createNotice = (data: ICreateNoticeData) =>
   request({
     url: notices,
     method: 'post',
     data
   })
 
-export const updateNotice = (data: ICreateOrUpdateNoticeData) =>
+export const updateNotice = (data: IUpdateNoticeData | {}) =>
   request({
     url: notices,
     method: 'patch',

@@ -107,14 +107,14 @@
           <el-button
             size="mini"
             type="primary"
-            @click="handleModify(row, 0)"
+            @click="handleModify(row)"
           >
             {{ $t('edit') }}
           </el-button>
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(row, 1)"
+            @click="handleDelete(row)"
           >
             {{ $t('delete') }}
           </el-button>
@@ -123,10 +123,10 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > params.limit"
       :total="total"
-      :page.sync="page"
-      :limit.sync="limit"
+      :page.sync="params.page"
+      :limit.sync="params.limit"
       @pagination="getList"
     />
 
@@ -172,14 +172,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import {
-  ICreateOrUpdateSubjectData,
+  ICreateSubjectData,
   IDeleteParams,
   IPage,
-  ISubjectParams
+  ISubjectParams, IUpdateSubjectData
 } from '@/api/types'
 import { createSubject, deleteSubject, getSubjects, updateSubject } from '@/api/subjects'
 import Pagination from '@/components/Pagination/index.vue'
 import { deepClone } from '@/utils'
+import { isValidSubject, isValidSubjectDesc } from '@/utils/validate'
 
   @Component({
     name: 'Subject',
@@ -198,15 +199,13 @@ export default class extends Vue {
     private subjectItem: any = {}
     private name = ''
     private author = ''
-    private page = 1;
-    private limit = 10;
     private total = 0;
     // -1：默认，0：添加，1：编辑
     private dialogType = -1;
 
     private params: ISubjectParams = {
-      page: this.page,
-      limit: this.limit
+      page: 1,
+      limit: 10
     }
 
     created() {
@@ -241,7 +240,7 @@ export default class extends Vue {
      * 分页
      */
     getList({ page }: IPage) {
-      this.page = page
+      this.params.page = page
       this.getSubjects()
     }
 
@@ -252,16 +251,6 @@ export default class extends Vue {
       this.dialogSubjectVisible = true
       this.dialogType = 0
     }
-
-    /**
-     * 导出当前页
-     */
-    handleExportCurrentPage() {}
-
-    /**
-     * 导出所有页
-     */
-    handleExportAllPage() {}
 
     /**
      * 取消
@@ -286,17 +275,35 @@ export default class extends Vue {
      * 弹出框确定
      */
     async handleOk() {
-      const body: ICreateOrUpdateSubjectData = {
+      if (!isValidSubject(this.subjectItem.no)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '科目名称不能为空'
+        })
+        return
+      }
+      if (!isValidSubjectDesc(this.subjectItem.no)) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '科目描述不能为空'
+        })
+        return
+      }
+      const base = {
         name: this.subjectItem.name,
-        desc: this.subjectItem.desc,
-        _id: this.subjectItem._id
+        desc: this.subjectItem.desc
       }
       let res: any
       let message = ''
       if (this.dialogType === 0) {
+        const body: ICreateSubjectData = base
         message = '添加成功'
         res = await createSubject(body)
       } else if (this.dialogType === 1) {
+        const body: IUpdateSubjectData | {} = {}
+        Object.assign(body, base, { _id: this.subjectItem._id })
         message = '更新成功'
         res = await updateSubject(body)
       }

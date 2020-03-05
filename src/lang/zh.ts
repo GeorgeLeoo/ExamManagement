@@ -111,6 +111,8 @@ export default {
     ph_no: '请输入工号',
     ph_name: '请输入姓名',
     ph_gender: '请选择性别',
+    ph_email: '请输入邮箱',
+    ph_phone: '请输入手机号',
     select_genders: [
       {
         text: '全部',
@@ -146,6 +148,8 @@ export default {
     ph_no: '请输入学号',
     ph_name: '请输入姓名',
     ph_gender: '请选择性别',
+    ph_email: '请输入邮箱',
+    ph_phone: '请输入手机号',
     select_genders: [
       {
         text: '全部',
@@ -216,7 +220,8 @@ export default {
     judgeScore: '判断分值',
     completeScore: '填空分值',
     afqScore: '解答分值',
-    questionNumber: '题数'
+    questionNumber: '题数',
+    showPaper: '查看试卷'
   },
   score: {
     no: '学号',
@@ -228,11 +233,14 @@ export default {
     startTime: '开始考试时间',
     endTime: '结束考试时间',
     diffTime: '总耗时',
-    showPaper: '查看试卷',
+    showAnswer: '查看答题卡',
+    status: '试卷状态',
     exportCurrentPage: '导出当页学生成绩',
     exportAllPage: '导出所有学生成绩'
   },
   questionBank: {
+    dialogTitleModify: '修改',
+    dialogTitleAdd: '添加',
     ph_question: '请输入题目',
     ph_subject: '请选择科目',
     question: '题目',
@@ -244,10 +252,10 @@ export default {
     picture: '配图',
     author: '创建者',
     selection: '选项',
-    a: 'A',
-    b: 'B',
-    c: 'C',
-    d: 'D'
+    a: '选项A',
+    b: '选项B',
+    c: '选项C',
+    d: '选项D'
   },
   navbar: {
     logOut: '退出登录',

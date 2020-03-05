@@ -11,7 +11,7 @@
         to="/"
       >
         <img
-          src="favicon.ico"
+          src="./../../../assets/logo.png"
           class="sidebar-logo"
         >
       </router-link>
