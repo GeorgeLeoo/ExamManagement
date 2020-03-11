@@ -346,17 +346,14 @@ export default class extends Vue {
     this.teacherItem = {}
   }
 
-  /**
-   * 弹出框确定
-   */
-  async handleOk() {
+  checkValid() {
     if (!isValidNo(this.teacherItem.no)) {
       this.$message({
         type: 'warning',
         duration: 3 * 1000,
         message: '工号不能为空'
       })
-      return
+      return true
     }
     if (!isValidName(this.teacherItem.name)) {
       this.$message({
@@ -364,7 +361,7 @@ export default class extends Vue {
         duration: 3 * 1000,
         message: '姓名不能为空'
       })
-      return
+      return true
     }
     if (!isValidGender(this.teacherItem.gender)) {
       this.$message({
@@ -372,7 +369,7 @@ export default class extends Vue {
         duration: 3 * 1000,
         message: '请选择性别'
       })
-      return
+      return true
     }
     if (!isValidEmail(this.teacherItem.email)) {
       this.$message({
@@ -380,7 +377,7 @@ export default class extends Vue {
         duration: 3 * 1000,
         message: '请输入正确的邮箱'
       })
-      return
+      return true
     }
     if (!isValidPhone(this.teacherItem.phone)) {
       this.$message({
@@ -388,10 +385,19 @@ export default class extends Vue {
         duration: 3 * 1000,
         message: '请输入正确的手机号'
       })
+      return true
+    }
+    return false
+  }
+
+  /**
+   * 弹出框确定
+   */
+  async handleOk() {
+    if (this.checkValid()) {
       return
     }
-    let res: any
-    let message = ''
+    let messages = ['添加成功', '更新成功']
     let base = {
       no: this.teacherItem.no,
       name: this.teacherItem.name,
@@ -401,20 +407,18 @@ export default class extends Vue {
     }
     if (this.dialogType === 0) {
       const body: ICreateTeachersData = base
-      message = '添加成功'
-      res = await createTeachers(body)
+      await createTeachers(body)
     } else if (this.dialogType === 1) {
       const body: IUpdateTeacherData | {} = {}
       Object.assign(body, base, { _id: this.teacherItem._id })
-      message = '更新成功'
-      res = await updateTeacher(body)
+      await updateTeacher(body)
     }
     this.dialogVisible = false
     this.handleFilter()
     this.$message({
       type: 'success',
       duration: 3 * 1000,
-      message
+      message: messages[this.dialogType]
     })
   }
 
