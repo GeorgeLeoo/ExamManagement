@@ -85,7 +85,7 @@
                 <span />
               </el-form-item>
               <el-form-item label="">
-                <span>{{ props.row.correctAnswer }}</span>
+                <span>{{ props.row.correctAnswer.join(', ') }}</span>
               </el-form-item>
             </el-form-item>
             <el-form-item :label="$t('questionBank.explanation')">

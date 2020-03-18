@@ -137,8 +137,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { questionFilter } from '@/filters'
-import {IQuestion} from '@/api/types';
-import {isEmpty} from '@/utils/validate';
+import { IQuestion } from '@/api/types'
+import { isEmpty } from '@/utils/validate'
 
   @Component({
     name: 'QuestionBankDialog',

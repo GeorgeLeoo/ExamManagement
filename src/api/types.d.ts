@@ -197,3 +197,7 @@ export interface IQuestion extends IQuestionBaseParams{
   d?: string | undefined
   correctAnswer: string | []
 }
+
+export interface IUpdateScoreParams extends IId{
+  score: number
+}

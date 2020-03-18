@@ -149,7 +149,7 @@
           <el-button
             size="mini"
             type="text"
-            @click="handleShowPaper(row, 1)"
+            @click="handleShowPaper(row)"
           >
             {{ $t('score.showAnswer') }}
           </el-button>
@@ -164,16 +164,130 @@
       :limit.sync="params.limit"
       @pagination="getList"
     />
+
+    <el-dialog
+      :visible.sync="dialogVisible"
+      :title="$t('score.showAnswer')"
+      width="1024px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      @close="handleCancel"
+    >
+      <div
+        v-loading="isLoading"
+        class="scoreDialogList"
+      >
+        <div>
+          <el-tag
+            type="success"
+            effect="dark"
+          >
+            正确
+          </el-tag>
+          <span class="padding" />
+          <el-tag
+            type="danger"
+            effect="dark"
+          >
+            错误
+          </el-tag>
+        </div>
+        <h3>单选题</h3>
+        <template v-for="(item, index) in answers.single">
+          <span :key="'single' + index">
+            <el-tag
+              :type="item.score > 0 ? 'success' : 'danger'"
+              effect="dark"
+            >
+              {{ index + 1 }}
+            </el-tag>
+            <span class="padding" />
+          </span>
+        </template>
+        <h3>多选题</h3>
+        <template v-for="(item, index) in answers.multiple">
+          <span :key="'multiple' + index">
+            <el-tag
+              :type="item.score > 0 ? 'success' : 'danger'"
+              effect="dark"
+            >
+              {{ index + 1 }}
+            </el-tag>
+            <span class="padding" />
+          </span>
+        </template>
+        <h3>判断题</h3>
+        <template v-for="(item, index) in answers.judge">
+          <span :key="'judge' + index">
+            <el-tag
+              :type="item.score > 0 ? 'success' : 'danger'"
+              effect="dark"
+            >
+              {{ index + 1 }}
+            </el-tag>
+            <span class="padding" />
+          </span>
+        </template>
+        <h3>填空题</h3>
+        <template v-for="(item, index) in answers.completion">
+          <span :key="'completion' + index">
+            <el-tag
+              :type="item.score > 0 ? 'success' : 'danger'"
+              effect="dark"
+            >
+              {{ index + 1 }}
+            </el-tag>
+            <span class="padding" />
+          </span>
+        </template>
+        <h3>解答题</h3>
+        <template v-for="(item, index) in answers.afq">
+          <dl
+            :key="'af1' + index"
+            class="afq-list"
+          >
+            <dt class="afq-item-title afq-item">
+              {{ index + 1 }}. {{ item.question.question }}
+            </dt>
+            <dd class="afq-item">
+              参考答案：{{ item.question.correctAnswer }}
+            </dd>
+            <dd class="afq-item">
+              考试答案：{{ item.answer }}
+            </dd>
+            <dd class="afq-judgement">
+              得分：
+              <el-input
+                v-model="judgeScore[index]"
+                style="width: 100px"
+                placeholder="0"
+              />
+              <span class="padding" />
+              <el-button
+                type="primary"
+                @click="handleOk(index, item.question._id)"
+              >
+                {{ $t('submit') }}
+              </el-button>
+            </dd>
+            <dd>
+              <el-divider />
+            </dd>
+          </dl>
+        </template>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import { IPage, IScoreParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
 import { getAllScores, getScores } from '@/api/scores'
 import { formatJson } from '@/utils'
 import { exportJson2Excel } from '@/utils/excel'
+import { getAnswers, updateScore } from '@/api/answers'
 
   @Component({
     name: 'Score',
@@ -184,18 +298,22 @@ import { exportJson2Excel } from '@/utils/excel'
 
 export default class extends Vue {
     private tableKey: Number = 0;
+    private isLoading: boolean = false;
+    private dialogVisible: boolean = false;
     private exportCurrentPageLoading: boolean = false;
     private exportAllPageLoading: boolean = false;
     private listLoading: boolean = false;
     private scoresList = [];
+    private answers = [];
+    private judgeScore: any = {};
     private no = ''
     private name = ''
-    private total = 0;
 
+    private total = 0;
     private filename = new Date().toLocaleDateString()
     private autoWidth = true
-    private bookType = 'xlsx'
 
+    private bookType = 'xlsx'
     private params: IScoreParams = {
       page: 1,
       limit: 10
@@ -206,12 +324,8 @@ export default class extends Vue {
     }
 
     private async getScores() {
-      if (this.no) {
-        Object.assign(this.params, { name: this.no })
-      }
-      if (this.name) {
-        Object.assign(this.params, { no: this.name })
-      }
+      this.no && Object.assign(this.params, { name: this.no })
+      this.name && Object.assign(this.params, { no: this.name })
       this.listLoading = true
       const { data } = await getScores(this.params)
       this.scoresList = data.list
@@ -259,9 +373,78 @@ export default class extends Vue {
       this.exportAllPageLoading = false
     }
 
-    handleShowPaper(row: any, status: Number) {}
+    handleShowPaper(row: any) {
+      this.dialogVisible = true
+      this.getAnswers(row._id)
+    }
+
+    async getAnswers(_id:string) {
+      const res = await getAnswers({ _id })
+      this.answers = res.data
+    }
+
+    handleCancel() {
+      this.dialogVisible = false
+      this.judgeScore = {}
+    }
+
+    /**
+     * 提交分数
+     */
+    async handleOk(index: string, _id: string) {
+      const score = Number(this.judgeScore[index])
+      if (isNaN(score)) {
+        this.$message({
+          type: 'error',
+          duration: 3 * 1000,
+          message: '请输入数字'
+        })
+        return
+      }
+      const params = {
+        _id,
+        score
+      }
+      await updateScore(params)
+      this.$message({
+        type: 'success',
+        duration: 3 * 1000,
+        message: '提交成功'
+      })
+    }
 }
 </script>
 
 <style scoped lang="scss">
+  .score-container{
+    .padding::after{
+      content: ".";
+      visibility: hidden;
+      padding: 0 10px;
+    }
+    .scoreDialogList{
+      height: calc(100vh - 390px);
+      overflow: auto;
+    }
+    .afq-list{
+      font-size: 16px;
+      color: #606266;
+    }
+    .afq-item-title {
+      padding-bottom: 16px;
+      color: #303133;
+    }
+    .afq-item {
+      line-height: 26px;
+      margin-left: 0;
+    }
+    .afq-item:nth-child(2) {
+      color: #F56C6C;
+    }
+    .afq-judgement{
+      margin-top: 16px;
+      padding-right: 16px;
+      text-align: right;
+    }
+  }
 </style>

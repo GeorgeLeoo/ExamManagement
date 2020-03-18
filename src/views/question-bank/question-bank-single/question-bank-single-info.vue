@@ -252,12 +252,8 @@ export default class extends Vue {
     }
 
     private async getSingles() {
-      if (this.question) {
-        Object.assign(this.params, { no: this.question })
-      }
-      if (this.subject) {
-        Object.assign(this.params, { name: this.subject })
-      }
+      this.question && Object.assign(this.params, { no: this.question })
+      this.subject && Object.assign(this.params, { name: this.subject })
       this.listLoading = true
       const { data } = await getSingles(this.params)
       this.questionBanksList = data.list

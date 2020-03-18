@@ -302,15 +302,9 @@ export default class extends Vue {
    * 公告教师获取
    */
   private async getTeachers() {
-    if (this.no) {
-      Object.assign(this.params, { no: this.no })
-    }
-    if (this.name) {
-      Object.assign(this.params, { name: this.name })
-    }
-    if (this.gender) {
-      Object.assign(this.params, { gender: this.gender })
-    }
+    this.no && Object.assign(this.params, { no: this.no })
+    this.name && Object.assign(this.params, { name: this.name })
+    this.gender && Object.assign(this.params, { gender: this.gender })
     this.listLoading = true
     const { data } = await getTeachers(this.params)
     this.teachersList = data.list

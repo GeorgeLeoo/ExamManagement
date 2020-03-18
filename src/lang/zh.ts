@@ -105,6 +105,9 @@ export default {
   createTime: '创建时间',
   male: '男',
   female: '女',
+  submit: '提交',
+  correct: '正确',
+  wrong: '错误',
   downloadTemplateTip: '将文件拖到此处，或',
   download: '点击上传',
   teacher: {
