@@ -1,4 +1,4 @@
-import {isValidUsername, isExternal, isValidSubject, isValidPhone} from '@/utils/validate'
+import { isValidUsername, isExternal, isValidSubject, isValidPhone } from '@/utils/validate'
 
 describe('Utils:validate', () => {
   it('isValidUsername', () => {

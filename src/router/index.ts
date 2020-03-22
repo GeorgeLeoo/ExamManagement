@@ -115,7 +115,9 @@ export const constantRoutes: RouteConfig[] = [
     children: [
       {
         path: 'teacher-info',
-        component: () => import(/* webpackChunkName: "teacher-info" */ '@/views/teacher/teacher-info.vue'),
+        component: function() {
+          return import(/* webpackChunkName: "teacher-info" */ '@/views/teacher/teacher-info.vue')
+        },
         name: 'TeacherInfo',
         meta: { title: 'teacher', icon: 'teacher' }
       }
