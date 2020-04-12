@@ -24,7 +24,8 @@ const getPageTitle = (key: string) => {
 router.beforeEach(async(to: Route, _: Route, next: any) => {
   // Start progress bar
   NProgress.start()
-
+  next()
+  // NProgress.done()
   // Determine whether the user has logged in
   if (UserModule.token) {
     if (to.path === '/login') {
@@ -33,32 +34,35 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
       NProgress.done()
     } else {
       // Check whether the user has obtained his permission roles
-      if (UserModule.roles.length === 0) {
-        try {
-          // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
-          await UserModule.GetUserInfo()
-          const roles = UserModule.roles
-          // Generate accessible routes map based on role
-          PermissionModule.GenerateRoutes(roles)
-          // Dynamically add accessible routes
-          router.addRoutes(PermissionModule.dynamicRoutes)
-          // Hack: ensure addRoutes is complete
-          // Set the replace: true, so the navigation will not leave a history record
-          next({ ...to, replace: true })
-        } catch (err) {
-          // Remove token and redirect to login page
-          UserModule.ResetToken()
-          Message.error(err || 'Has Error')
-          next(`/login?redirect=${to.path}`)
-          NProgress.done()
-        }
-      } else {
+      // if (UserModule.roles.length === 0) {
+      try {
+        // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
+        // if (UserModule.uid === '') {
+        // await UserModule.GetUserInfo()
+        // }
+        // const roles = UserModule.roles
+        // Generate accessible routes map based on role
+        // PermissionModule.GenerateRoutes(roles)
+        // Dynamically add accessible routes
+        // router.addRoutes(PermissionModule.dynamicRoutes)
+        // Hack: ensure addRoutes is complete
+        // Set the replace: true, so the navigation will not leave a history record
+        // next({ ...to, replace: true })
         next()
+      } catch (err) {
+        // Remove token and redirect to login page
+        UserModule.ResetToken()
+        Message.error(err || 'Has Error')
+        next(`/login?redirect=${to.path}`)
+        NProgress.done()
       }
+      // } else {
+      //   next()
+      // }
     }
   } else {
     // Has no token
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (whiteList.indexOf(to.path) > -1) {
       // In the free login whitelist, go directly
       next()
     } else {

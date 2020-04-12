@@ -56,7 +56,6 @@
       />
       <el-table-column
         :label="$t('notice.content')"
-        prop="content"
       >
         <template slot-scope="scope">
           <span>{{ scope.row.content }}</span>
@@ -64,12 +63,11 @@
       </el-table-column>
       <el-table-column
         :label="$t('notice.author')"
-        prop="author"
         align="center"
         width="200"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.admin && scope.row.admin.username }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -160,6 +158,7 @@ import {
 import Pagination from '@/components/Pagination/index.vue'
 import { deepClone } from '@/utils'
 import { isValidNotice } from '@/utils/validate'
+import { UserModule } from '@/store/modules/user'
 
   @Component({
     name: 'Notice',
@@ -195,14 +194,11 @@ export default class extends Vue {
      * 公告信息获取
      */
     private async getNotices() {
-      if (this.content) {
-        Object.assign(this.params, { no: this.content })
-      }
-      if (this.author) {
-        Object.assign(this.params, { name: this.author })
-      }
+      let params:any = { ...this.params }
+      this.content && (params.content = this.content)
+      this.author && (params.username = this.author)
       this.listLoading = true
-      const { data } = await getNotices(this.params)
+      const { data } = await getNotices(params)
       this.noticesList = data.list
       this.total = data.total
       this.listLoading = false
@@ -254,7 +250,7 @@ export default class extends Vue {
      * 弹出框确定
      */
     async handleOk() {
-      if (!isValidNotice(this.noticeItem.no)) {
+      if (!isValidNotice(this.noticeItem.content)) {
         this.$message({
           type: 'warning',
           duration: 3 * 1000,
@@ -263,33 +259,21 @@ export default class extends Vue {
         return
       }
       const base = {
-        content: this.noticeItem.content
+        content: this.noticeItem.content,
+        admin: UserModule.uid
       }
       let res: any
       let message = ''
       if (this.dialogType === 0) {
         const body: ICreateNoticeData = base
-        message = '添加成功'
-        res = await createNotice(body)
+        await createNotice(body)
       } else if (this.dialogType === 1) {
         const body: IUpdateNoticeData | {} = {}
         Object.assign(body, base, { _id: this.noticeItem._id })
-        message = '更新成功'
-        res = await updateNotice(body)
+        await updateNotice(body)
       }
-      if (res.data === 'success') {
-        this.handleFilter()
-        this.dialogNoticeVisible = false
-        this.$message({
-          type: 'success',
-          message
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: res.data
-        })
-      }
+      this.handleFilter()
+      this.dialogNoticeVisible = false
     }
 
     /**
@@ -315,19 +299,8 @@ export default class extends Vue {
       const body: IDeleteParams = {
         _id
       }
-      const { data } = await deleteNoticeById(body)
-      if (data === 'success') {
-        this.handleFilter()
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: data
-        })
-      }
+      await deleteNoticeById(body)
+      await this.getNotices()
     }
 }
 </script>

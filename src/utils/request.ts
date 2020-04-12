@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
+import { responseCode } from '@/config'
+import uiutils from '@/uiutils'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -12,9 +14,9 @@ const service = axios.create({
 service.interceptors.request.use(
   (config) => {
     // Add X-Access-Token header to every request, you can add other custom headers here
-    if (UserModule.token) {
-      config.headers['X-Access-Token'] = UserModule.token
-    }
+    // if (UserModule.token) {
+    //   config.headers['X-Access-Token'] = UserModule.token
+    // }
     return config
   },
   (error) => {
@@ -34,13 +36,9 @@ service.interceptors.response.use(
     // code == 50005: username or password is incorrect
     // You can change this part for your own usage.
     const res = response.data
-    if (res.code !== 20000) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+    if (res.code !== responseCode.SUCCESS) {
+      uiutils.Message.error(res.msg)
+      if (res.code === responseCode.CLIENT_ERROR || res.code === responseCode.SERVICE_ERROR) {
         MessageBox.confirm(
           '你已被登出，可以取消继续留在该页面，或者重新登录',
           '确定登出',
@@ -56,15 +54,14 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      if (res.msg) {
+        uiutils.Message.success(res.msg)
+      }
       return response.data
     }
   },
   (error) => {
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    uiutils.Message.error(error.response.data.msg)
     return Promise.reject(error)
   }
 )

@@ -10,7 +10,7 @@ import { teachers } from '@/api/urls'
 
 export const getTeachers = (params: ITeacherParams) =>
   request({
-    url: teachers,
+    url: '/admin/infos',
     method: 'get',
     params
   })
@@ -30,21 +30,21 @@ export const deleteTeachers = (params: IDeleteParams) =>
 
 export const createTeachers = (data: ICreateTeachersData) =>
   request({
-    url: teachers,
+    url: '/admin/info',
     method: 'post',
     data
   })
 
 export const updateTeacher = (data: IUpdateTeacherData | {}) =>
   request({
-    url: teachers,
+    url: '/admin/info',
     method: 'patch',
     data
   })
 
 export const updateTeacherStatus = (data: IUpdateTeacherStatusData) =>
   request({
-    url: `${teachers}/status`,
+    url: `/admin/status`,
     method: 'put',
     data
   })
