@@ -6,7 +6,7 @@ spawn zip -r ExamManagement.zip ./ExamManagement
 
 spawn scp -r ./ExamManagement root@139.159.201.22:/root/www
 
-spawn unzip /root/www/ExamManagement
+spawn unzip /root/www/ExamManagement.zip
 
  expect {
 
