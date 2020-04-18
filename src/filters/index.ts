@@ -12,7 +12,7 @@ import {
   updateSingle
 } from '@/api/questions'
 
-export {parseTime} from '@/utils'
+export { parseTime } from '@/utils'
 
 // Filter for article status
 export const articleStatusFilter = (status: string) => {
@@ -101,6 +101,7 @@ export const getDurationTime = (item: any) => {
   const seconds = parseInt(diffTime % 60 + '') // 以60秒为一整份 取余 剩下秒数
   return (hours > 10 ? hours : ('0' + hours)) + ':' + (minutes > 10 ? minutes : ('0' + minutes)) + ':' + (seconds > 10 ? seconds : ('0' + seconds))
 }
+
 /**
  * 计算试卷总分
  * @param item

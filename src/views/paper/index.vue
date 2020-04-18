@@ -1042,6 +1042,7 @@ export default class extends Vue {
         this.fixedForm = deepClone(row)
         // @ts-ignore
         this.fixedForm.time = [this.fixedForm.startTime, this.fixedForm.endTime]
+        // @ts-ignore
         this.fixedForm.subject = this.fixedForm.subject._id
         this.handleFixedCombinePager()
         this.singleCheckList = row.single.map((item: any) => JSON.stringify(item))
@@ -1054,6 +1055,7 @@ export default class extends Vue {
         this.randomForm = deepClone(row)
         // @ts-ignore
         this.randomForm.time = [this.randomForm.startTime, this.randomForm.endTime]
+        // @ts-ignore
         this.randomForm.subject = this.randomForm.subject._id
         this.handleRandomCombinePager()
       }
