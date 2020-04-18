@@ -7,7 +7,7 @@
   <div class="app-container student-container">
     <div class="filter-container">
       <el-input
-        v-model="no"
+        v-model="username"
         :placeholder="$t('student.ph_no')"
         style="width: 200px;"
         class="filter-item gap-right-32"
@@ -83,17 +83,15 @@
       style="width: 100%;"
     >
       <el-table-column
-        :label="$t('student.no')"
-        prop="no"
+        :label="$t('student.username')"
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.no }}</span>
+          <span>{{ scope.row.username }}</span>
         </template>
       </el-table-column>
       <el-table-column
         :label="$t('student.name')"
-        prop="name"
         align="center"
       >
         <template slot-scope="scope">
@@ -102,7 +100,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('student.gender')"
-        prop="gender"
         align="center"
       >
         <template slot-scope="scope">
@@ -111,7 +108,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('student.avatar')"
-        prop="avatar"
         align="center"
       >
         <template slot-scope="scope">
@@ -123,7 +119,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('student.email')"
-        prop="email"
         align="center"
       >
         <template slot-scope="scope">
@@ -132,19 +127,10 @@
       </el-table-column>
       <el-table-column
         :label="$t('student.phone')"
-        prop="phone"
         align="center"
       >
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('student.signUpAt')"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.signUpAt | parseTime }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -170,7 +156,7 @@
             {{ $t('edit') }}
           </el-button>
           <el-button
-            v-if="row.status === 1"
+            v-if="row.state === 1"
             size="mini"
             type="success"
             @click="handleModifyStatus(row, 0)"
@@ -178,7 +164,7 @@
             {{ $t('enable') }}
           </el-button>
           <el-button
-            v-if="row.status === 0"
+            v-if="row.state === 0"
             size="mini"
             type="danger"
             @click="handleModifyStatus(row, 1)"
@@ -207,11 +193,26 @@
         ref="form"
         label-width="70px"
       >
-        <el-form-item :label="$t('student.no')">
-          <el-input v-model="studentItem.no" />
+        <el-form-item :label="$t('student.username')">
+          <el-input
+            v-model="studentItem.username"
+            :readonly="dialogType === 1"
+          />
         </el-form-item>
         <el-form-item :label="$t('student.name')">
           <el-input v-model="studentItem.name" />
+        </el-form-item>
+        <el-form-item :label="$t('student.password')">
+          <el-input
+            v-model="studentItem.password"
+            :placeholder="dialogType === 1 ? '若要修改密码请重新输入密码' : $t('student.ph_password')"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('student.rePassword')">
+          <el-input
+            v-model="studentItem.rePassword"
+            :placeholder="dialogType === 1 ? '若要修改密码请重新输入密码' : $t('student.ph_rePassword')"
+          />
         </el-form-item>
         <el-form-item :label="$t('student.gender')">
           <el-radio-group v-model="studentItem.gender">
@@ -278,7 +279,7 @@ export default class extends Vue {
     private listLoading: boolean = false
     private studentsList = []
     private studentItem: any = {}
-    private no = ''
+    private username = ''
     private name = ''
     private gender = ''
     private total = 0;
@@ -302,17 +303,12 @@ export default class extends Vue {
      * 公告学生获取
      */
     private async getStudents() {
-      if (this.no) {
-        Object.assign(this.params, { no: this.no })
-      }
-      if (this.name) {
-        Object.assign(this.params, { name: this.name })
-      }
-      if (this.gender) {
-        Object.assign(this.params, { gender: this.gender })
-      }
+      let params:any = { ...this.params }
+      this.username && (params.username = this.username)
+      this.name && (params.name = this.name)
+      this.gender !== '' && (params.gender = this.gender)
       this.listLoading = true
-      const { data } = await getStudents(this.params)
+      const { data } = await getStudents(params)
       this.studentsList = data.list
       this.total = data.total
       this.listLoading = false
@@ -353,11 +349,11 @@ export default class extends Vue {
      * 弹出框确定
      */
     async handleOk() {
-      if (!isValidNo(this.studentItem.no)) {
+      if (!isValidNo(this.studentItem.username)) {
         this.$message({
           type: 'warning',
           duration: 3 * 1000,
-          message: '学号不能为空'
+          message: '账号不能为空'
         })
         return
       }
@@ -395,46 +391,36 @@ export default class extends Vue {
       }
       let res: any
       let message = ''
-      let base = {
-        no: this.studentItem.no,
+      let base: ICreateStudentsData = {
+        username: this.studentItem.username,
         name: this.studentItem.name,
         gender: this.studentItem.gender,
         email: this.studentItem.email,
+        oldEmail: this.studentItem.oldEmail,
         phone: this.studentItem.phone
       }
+
+      this.studentItem.password && (base.password = this.studentItem.password)
+      this.studentItem.rePassword && (base.rePassword = this.studentItem.rePassword)
+
       if (this.dialogType === 0) {
         const body: ICreateStudentsData = base
-        message = '添加成功'
-        res = await createStudents(body)
+        await createStudents(body)
       } else if (this.dialogType === 1) {
         const body: IUpdateStudentData | {} = {}
         Object.assign(body, base, { _id: this.studentItem._id })
-        message = '更新成功'
-        res = await updateStudent(body)
+        await updateStudent(body)
       }
-      if (res.data === 'success') {
-        this.handleFilter()
-        this.dialogVisible = false
-        this.$message({
-          type: 'success',
-          duration: 3 * 1000,
-          message
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          duration: 3 * 1000,
-          message: res.data
-        })
-      }
+      this.dialogVisible = false
+      this.handleFilter()
     }
 
     /**
      * 下载数据
      */
     handleDownload(obj: any) {
-      const tHeader = ['学号', '姓名', '性别', '邮箱', '手机号', '注册时间', '创建时间']
-      const filterVal = ['no', 'name', 'gender', 'email', 'phone', 'signUpAt', 'createdAt']
+      const tHeader = ['账号', '姓名', '性别', '邮箱', '手机号', '创建时间']
+      const filterVal = ['username', 'name', 'gender', 'email', 'phone', 'createdAt']
       const data = formatJson(filterVal, obj)
       exportJson2Excel(tHeader, data, this.filename !== '' ? this.filename : undefined, undefined, undefined, this.autoWidth, this.bookType)
     }
@@ -461,29 +447,15 @@ export default class extends Vue {
     /**
      * 修改账号状态
      * @param row
-     * @param status
+     * @param state
      */
-    async handleModifyStatus(row: any, status: number) {
+    async handleModifyStatus(row: any, state: number) {
       const body: IUpdateStudentStatusData = {
         _id: row._id,
-        status: status
+        state
       }
-      let res = await updateStudentStatus(body)
-      if (res.data === 'success') {
-        this.handleFilter()
-        this.dialogVisible = false
-        this.$message({
-          type: 'success',
-          duration: 3 * 1000,
-          message: '操作成功'
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          duration: 3 * 1000,
-          message: res.data
-        })
-      }
+      await updateStudentStatus(body)
+      this.handleFilter()
     }
 
     /**
@@ -494,6 +466,7 @@ export default class extends Vue {
       this.dialogType = 1
       this.dialogVisible = true
       this.studentItem = deepClone(row)
+      this.studentItem.oldEmail = row.email
     }
 }
 </script>

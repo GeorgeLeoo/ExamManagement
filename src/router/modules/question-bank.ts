@@ -24,7 +24,7 @@ const questionBankRoutes: RouteConfig = {
           path: 'question-bank-single-info',
           component: () => import(/* webpackChunkName: "question-bank-single-info" */ '@/views/question-bank/question-bank-single/question-bank-single-info.vue'),
           name: 'questionBankSingleInfo',
-          meta: { title: 'questionBankSingleInfo', icon: 'single-info' },
+          meta: { title: 'questionBankSingleInfo', icon: 'single-info' }
         },
         {
           path: 'question-bank-single-upload',

@@ -169,13 +169,13 @@ Javascript 版本:
 ├── .editorconfig              # 编辑相关配置
 ├── .env.xxx                   # 环境变量配置
 ├── .eslintrc.js               # eslint 配置
-├── babel.config.js            # babel-loader 配置
+├── babel.index.ts            # babel-loader 配置
 ├── cypress.json               # e2e 测试配置
-├── jest.config.js             # jest 单元测试配置
+├── jest.index.ts             # jest 单元测试配置
 ├── package.json               # package.json 依赖
-├── postcss.config.js          # postcss 配置
+├── postcss.index.ts          # postcss 配置
 ├── tsconfig.json              # typescript 配置
-└── vue.config.js              # vue-cli 配置
+└── vue.index.ts              # vue-cli 配置
 ```
 
 ## 如何设置以及启动项目

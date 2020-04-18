@@ -1,3 +1,8 @@
+export interface Result {
+  code: number,
+  msg: string,
+  data: any
+}
 export interface IPage {
   page: number
   limit: number
@@ -53,13 +58,13 @@ export interface IUserData {
 }
 
 export interface ITeacherParams extends IPage{
-  no?: string
+  username?: string
   name?: string
   gender?: string
 }
 
 export interface ITeacherData {
-  no: string
+  username: string
   email: string
   gender: string
   avatar: string
@@ -94,13 +99,13 @@ export interface INoticeParams extends IPage {
 }
 
 export interface IScoreParams extends IPage {
-  no?: string
+  username?: string
   name?: string
 }
 
 export interface IPaperParams extends IPage {
   subject?: string
-  gender?: number
+  paperType?: number
   name?: string
 }
 
@@ -129,11 +134,14 @@ export interface IUpdateSubjectData {
 }
 
 export interface ICreateTeachersData {
-  no: string
+  username: string
   name: string
   gender: number
   email: string
   phone: string
+  oldEmail?: string
+  password?: string
+  rePassword?: string
 }
 
 export interface IUpdateTeacherData extends ICreateTeachersData{
@@ -148,7 +156,7 @@ export interface ICreateStudentsData extends ICreateTeachersData{}
 
 export interface IUpdateTeacherStatusData {
   _id: string
-  status: number
+  state: number
 }
 
 export interface IUpdateStudentStatusData extends IUpdateTeacherStatusData{}
@@ -195,5 +203,10 @@ export interface IQuestion extends IQuestionBaseParams{
   b?: string | undefined
   c?: string | undefined
   d?: string | undefined
+  admin: string
   correctAnswer: string | []
+}
+
+export interface IUpdateScoreParams extends IId{
+  score: number
 }

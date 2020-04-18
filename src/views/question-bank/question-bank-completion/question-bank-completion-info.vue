@@ -13,13 +13,26 @@
         class="filter-item gap-right-32"
         @keyup.enter.native="handleFilter"
       />
-      <el-input
+      <!--      <el-input-->
+      <!--        v-model="subject"-->
+      <!--        :placeholder="$t('questionBank.ph_subject')"-->
+      <!--        style="width: 200px;"-->
+      <!--        class="filter-item gap-right-32"-->
+      <!--        @keyup.enter.native="handleFilter"-->
+      <!--      />-->
+      <el-select
         v-model="subject"
         :placeholder="$t('questionBank.ph_subject')"
-        style="width: 200px;"
+        style="width: 200px"
         class="filter-item gap-right-32"
-        @keyup.enter.native="handleFilter"
-      />
+      >
+        <el-option
+          v-for="item in subjectsList"
+          :key="item._id"
+          :label="item.name"
+          :value="item._id"
+        />
+      </el-select>
       <el-button
         v-waves
         class="filter-item gap-right-32"
@@ -98,18 +111,18 @@
       <el-table-column
         :label="$t('questionBank.subject')"
         prop="subject"
-        align="center"
         width="120"
+        align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.subject }}</span>
+          <span>{{ scope.row.subjectId && scope.row.subjectId.name }}</span>
         </template>
       </el-table-column>
       <el-table-column
         :label="$t('questionBank.difficulty')"
         prop="difficulty"
-        align="center"
         width="150"
+        align="center"
       >
         <template slot-scope="scope">
           <el-rate
@@ -122,8 +135,8 @@
       <el-table-column
         :label="$t('questionBank.picture')"
         prop="picture"
-        align="center"
         width="140"
+        align="center"
       >
         <template slot-scope="scope">
           <el-avatar
@@ -134,9 +147,18 @@
         </template>
       </el-table-column>
       <el-table-column
-        :label="$t('createTime')"
-        align="center"
+        :label="'作者'"
         width="200"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.admin && scope.row.admin.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        :label="$t('createTime')"
+        width="200"
+        align="center"
       >
         <template slot-scope="scope">
           <span>{{ scope.row.createdAt | parseTime }}</span>
@@ -168,7 +190,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > limit"
       :total="total"
       :page.sync="page"
       :limit.sync="limit"
@@ -177,7 +199,8 @@
 
     <DialogQuestionBank
       v-if="dialogVisible"
-      :data="completionItem"
+      :data="item"
+      :subject-list="subjectsList"
       :dialog-type="dialogType"
       :bank-type="3"
       @cancel="handleCancel"
@@ -193,6 +216,7 @@ import { IDeleteParams, IQuestionParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
 import DialogQuestionBank from '@/components/DialogQuestionBank/index.vue'
 import { deepClone } from '@/utils'
+import { getSubjects } from '@/api/subjects'
 
   @Component({
     name: 'QuestionBankCompletionInfo',
@@ -209,40 +233,58 @@ export default class extends Vue {
     private exportAllPageLoading: boolean = false;
     private listLoading: boolean = false;
     private questionBanksList = []
-    private completionItem = {
+    private item = {
       difficulty: 0
     }
+    private subjectsList = [
+      {
+        _id: '0',
+        name: '全部'
+      }
+    ]
     private question = ''
-    private subject = ''
+    private subject = '0'
     private page = 1;
     private limit = 10;
     private total = 0;
     // -1：默认，0：添加，1：编辑
     private dialogType = -1;
-
     private params: IQuestionParams = {
       page: this.page,
       limit: this.limit
     }
 
-    created() {
+    mounted() {
+      this.getSubjects()
       this.getCompletions()
+    }
+
+    /**
+     * 获取科目信息
+     */
+    private async getSubjects() {
+      let params:any = {
+        page: 1,
+        limit: 100000000
+      }
+      const { data } = await getSubjects(params)
+      this.subjectsList.push(...data.list)
     }
 
     handleFetch() {
       this.handleFilter()
+      this.item = {
+        difficulty: 0
+      }
       this.dialogVisible = false
     }
 
     private async getCompletions() {
-      if (this.question) {
-        Object.assign(this.params, { no: this.question })
-      }
-      if (this.subject) {
-        Object.assign(this.params, { name: this.subject })
-      }
+      let params:any = { ...this.params }
+      this.question && (params.question = this.question)
+      this.subject !== '0' && (params.subjectId = this.subject)
       this.listLoading = true
-      const { data } = await getCompletions(this.params)
+      const { data } = await getCompletions(params)
       this.questionBanksList = data.list
       this.total = data.total
       this.listLoading = false
@@ -271,22 +313,15 @@ export default class extends Vue {
     handleModify(row: any) {
       this.dialogType = 1
       this.dialogVisible = true
-      this.completionItem = deepClone(row)
+      this.item = deepClone(row)
     }
 
     async handleDelete(row: any) {
       const data: IDeleteParams = {
         _id: row._id
       }
-      const res = await deleteCompletion(data)
-      if (res.data === 'success') {
-        this.getCompletions()
-        this.$message({
-          type: 'success',
-          duration: 3 * 1000,
-          message: '删除成功'
-        })
-      }
+      await deleteCompletion(data)
+      this.getCompletions()
     }
 
     /**

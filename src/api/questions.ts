@@ -9,144 +9,144 @@ import {
   ISingleMultipleData,
   ISingleMultipleParams
 } from '@/api/types'
-import { afq, completions, judges, multiples, singles } from '@/api/urls'
+import { afq, completions, judges, multiples, questionBank, singles } from '@/api/urls'
 
 export const getSingles = (params: IQuestionParams) =>
   request({
-    url: singles,
+    url: questionBank + singles,
     method: 'get',
     params
   })
 
 export const createSingle = (data: ISingleMultipleParams) =>
   request({
-    url: singles,
+    url: questionBank + singles,
     method: 'post',
     data
   })
 
 export const updateSingle = (data: ISingleMultipleData) =>
   request({
-    url: singles,
-    method: 'post',
+    url: questionBank + singles,
+    method: 'patch',
     data
   })
 
 export const deleteSingle = (params: IDeleteParams) =>
   request({
-    url: singles,
+    url: questionBank + singles,
     method: 'delete',
     params
   })
 
 export const getMultiples = (params: IQuestionParams) =>
   request({
-    url: multiples,
+    url: questionBank + multiples,
     method: 'get',
     params
   })
 
 export const createMultiple = (data: ISingleMultipleParams) =>
   request({
-    url: multiples,
+    url: questionBank + multiples,
     method: 'post',
     data
   })
 
 export const updateMultiple = (data: ISingleMultipleData) =>
   request({
-    url: multiples,
-    method: 'post',
+    url: questionBank + multiples,
+    method: 'patch',
     data
   })
 
 export const deleteMultiple = (params: IDeleteParams) =>
   request({
-    url: multiples,
+    url: questionBank + multiples,
     method: 'delete',
     params
   })
 
 export const getJudges = (params: IQuestionParams) =>
   request({
-    url: judges,
+    url: questionBank + judges,
     method: 'get',
     params
   })
 
 export const createJudge = (data: IJudgeParams) =>
   request({
-    url: judges,
+    url: questionBank + judges,
     method: 'post',
     data
   })
 
 export const updateJudge = (data: IJudgeData) =>
   request({
-    url: judges,
-    method: 'post',
+    url: questionBank + judges,
+    method: 'patch',
     data
   })
 
 export const deleteJudge = (params: IDeleteParams) =>
   request({
-    url: multiples,
+    url: questionBank + judges,
     method: 'delete',
     params
   })
 
 export const getCompletions = (params: IQuestionParams) =>
   request({
-    url: completions,
+    url: questionBank + completions,
     method: 'get',
     params
   })
 
 export const createCompletion = (data: ICompletionAFQParams) =>
   request({
-    url: completions,
+    url: questionBank + completions,
     method: 'post',
     data
   })
 
 export const updateCompletion = (data: ICompletionAFQData) =>
   request({
-    url: completions,
-    method: 'post',
+    url: questionBank + completions,
+    method: 'patch',
     data
   })
 
 export const deleteCompletion = (params: IDeleteParams) =>
   request({
-    url: completions,
+    url: questionBank + completions,
     method: 'delete',
     params
   })
 
 export const getAFQs = (params: IQuestionParams) =>
   request({
-    url: afq,
+    url: questionBank + afq,
     method: 'get',
     params
   })
 
 export const createAFQ = (data: ICompletionAFQParams) =>
   request({
-    url: afq,
+    url: questionBank + afq,
     method: 'post',
     data
   })
 
 export const updateAFQ = (data: ICompletionAFQData) =>
   request({
-    url: afq,
-    method: 'post',
+    url: questionBank + afq,
+    method: 'patch',
     data
   })
 
 export const deleteAFQ = (params: IDeleteParams) =>
   request({
-    url: afq,
+    url: questionBank + afq,
     method: 'delete',
     params
   })

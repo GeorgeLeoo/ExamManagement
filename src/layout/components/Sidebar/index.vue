@@ -15,7 +15,7 @@
         mode="vertical"
       >
         <sidebar-item
-          v-for="route in routes"
+          v-for="route in menuList"
           :key="route.path"
           :item="route"
           :base-path="route.path"
@@ -34,6 +34,8 @@ import { SettingsModule } from '@/store/modules/settings'
 import SidebarItem from './SidebarItem.vue'
 import SidebarLogo from './SidebarLogo.vue'
 import variables from '@/styles/_variables.scss'
+import router from '@/router'
+import Router from 'vue-router'
 
 @Component({
   name: 'SideBar',
@@ -43,6 +45,9 @@ import variables from '@/styles/_variables.scss'
   }
 })
 export default class extends Vue {
+  // @ts-ignore
+  private menuList:any = router.options.routes
+
   get sidebar() {
     return AppModule.sidebar
   }

@@ -13,13 +13,19 @@
         class="filter-item gap-right-32"
         @keyup.enter.native="handleFilter"
       />
-      <el-input
+      <el-select
         v-model="subject"
         :placeholder="$t('questionBank.ph_subject')"
-        style="width: 200px;"
+        style="width: 200px"
         class="filter-item gap-right-32"
-        @keyup.enter.native="handleFilter"
-      />
+      >
+        <el-option
+          v-for="item in subjectsList"
+          :key="item._id"
+          :label="item.name"
+          :value="item._id"
+        />
+      </el-select>
       <el-button
         v-waves
         class="filter-item gap-right-32"
@@ -119,7 +125,7 @@
         width="120"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.subject }}</span>
+          <span>{{ scope.row.subjectId.name }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -185,7 +191,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > limit"
       :total="total"
       :page.sync="page"
       :limit.sync="limit"
@@ -210,6 +216,7 @@ import { IDeleteParams, IQuestionParams } from '@/api/types'
 import Pagination from '@/components/Pagination/index.vue'
 import DialogQuestionBank from '@/components/DialogQuestionBank/index.vue'
 import { deepClone } from '@/utils'
+import { getSubjects } from '@/api/subjects'
 
   @Component({
     name: 'QuestionBankSingleInfo',
@@ -229,6 +236,12 @@ export default class extends Vue {
     private singleItem = {
       difficulty: 0
     }
+    private subjectsList = [
+      {
+        _id: '0',
+        name: '全部'
+      }
+    ]
     private question = ''
     private subject = ''
     private page = 1;
@@ -243,23 +256,36 @@ export default class extends Vue {
     }
 
     created() {
+      this.getSubjects()
       this.getSingles()
+    }
+
+    /**
+     * 获取科目信息
+     */
+    private async getSubjects() {
+      let params:any = {
+        page: 1,
+        limit: 100000000
+      }
+      const { data } = await getSubjects(params)
+      this.subjectsList.push(...data.list)
     }
 
     handleFetch() {
       this.handleFilter()
+      this.singleItem = {
+        difficulty: 0
+      }
       this.dialogVisible = false
     }
 
     private async getSingles() {
-      if (this.question) {
-        Object.assign(this.params, { no: this.question })
-      }
-      if (this.subject) {
-        Object.assign(this.params, { name: this.subject })
-      }
+      let params:any = { ...this.params }
+      this.question && (params.question = this.question)
+      this.subject !== '0' && (params.subjectId = this.subject)
       this.listLoading = true
-      const { data } = await getSingles(this.params)
+      const { data } = await getSingles(params)
       this.questionBanksList = data.list
       this.total = data.total
       this.listLoading = false
@@ -286,6 +312,9 @@ export default class extends Vue {
      */
     handleCancel() {
       this.dialogVisible = false
+      this.singleItem = {
+        difficulty: 0
+      }
     }
 
     /**
@@ -312,15 +341,8 @@ export default class extends Vue {
       const data: IDeleteParams = {
         _id: row._id
       }
-      const res = await deleteSingle(data)
-      if (res.data === 'success') {
-        this.getSingles()
-        this.$message({
-          type: 'success',
-          duration: 3 * 1000,
-          message: '删除成功'
-        })
-      }
+      await deleteSingle(data)
+      this.getSingles()
     }
 
     handleAvatarSuccess(res:any, file:any) {

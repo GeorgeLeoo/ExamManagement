@@ -10,7 +10,7 @@ import { students } from '@/api/urls'
 
 export const getStudents = (params: IStudentParams) =>
   request({
-    url: students,
+    url: '/user/infos',
     method: 'get',
     params
   })
@@ -30,21 +30,21 @@ export const deleteStudents = (params: IDeleteParams) =>
 
 export const createStudents = (data: ICreateStudentsData) =>
   request({
-    url: students,
+    url: '/user/info',
     method: 'post',
     data
   })
 
 export const updateStudent = (data: IUpdateTeacherData | {}) =>
   request({
-    url: students,
+    url: '/user/info',
     method: 'patch',
     data
   })
 
 export const updateStudentStatus = (data: IUpdateStudentStatusData) =>
   request({
-    url: `${students}/status`,
+    url: `/user/status`,
     method: 'put',
     data
   })

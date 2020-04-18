@@ -115,7 +115,9 @@ export const constantRoutes: RouteConfig[] = [
     children: [
       {
         path: 'teacher-info',
-        component: () => import(/* webpackChunkName: "teacher-info" */ '@/views/teacher/teacher-info.vue'),
+        component: function() {
+          return import(/* webpackChunkName: "teacher-info" */ '@/views/teacher/teacher-info.vue')
+        },
         name: 'TeacherInfo',
         meta: { title: 'teacher', icon: 'teacher' }
       }
@@ -132,23 +134,6 @@ export const constantRoutes: RouteConfig[] = [
         component: () => import(/* webpackChunkName: "student-info" */ '@/views/student/student-info.vue'),
         name: 'StudentInfo',
         meta: { title: 'student', icon: 'student', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/score',
-    component: Layout,
-    redirect: '/score/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "score" */ '@/views/score/index.vue'),
-        name: 'Score',
-        meta: {
-          title: 'score',
-          icon: 'score',
-          noCache: true
-        }
       }
     ]
   },
@@ -181,6 +166,23 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'paper',
           icon: 'paper',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/score',
+    component: Layout,
+    redirect: '/score/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import(/* webpackChunkName: "score" */ '@/views/score/index.vue'),
+        name: 'Score',
+        meta: {
+          title: 'score',
+          icon: 'score',
           noCache: true
         }
       }

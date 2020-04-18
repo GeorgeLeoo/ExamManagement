@@ -1,6 +1,6 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
 import { login, logout, getUserInfo } from '@/api/users'
-import { getToken, setToken, removeToken } from '@/utils/cookies'
+import { getToken, setToken, removeToken, getUid, setUid, removeUid } from '@/utils/cookies'
 import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'
@@ -18,6 +18,7 @@ export interface IUserState {
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
   public token = getToken() || ''
+  public uid = getUid() || ''
   public name = ''
   public avatar = ''
   public introduction = ''
@@ -27,6 +28,11 @@ class User extends VuexModule implements IUserState {
   @Mutation
   private SET_TOKEN(token: string) {
     this.token = token
+  }
+
+  @Mutation
+  private SET_UID(uid: string) {
+    this.uid = uid
   }
 
   @Mutation
@@ -59,14 +65,18 @@ class User extends VuexModule implements IUserState {
     let { username, password } = userInfo
     username = username.trim()
     const { data }: any = await login({ username, password })
-    setToken(data.accessToken)
-    this.SET_TOKEN(data.accessToken)
+    setToken(data.token)
+    setUid(data.uid)
+    this.SET_TOKEN(data.token)
+    this.SET_UID(data.uid)
   }
 
   @Action
   public ResetToken() {
     removeToken()
+    removeUid()
     this.SET_TOKEN('')
+    this.SET_UID('')
     this.SET_ROLES([])
   }
 
@@ -75,15 +85,15 @@ class User extends VuexModule implements IUserState {
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    const { data }: any = await getUserInfo({ /* Your params here */ })
+    const { data }: any = await getUserInfo({ uid: this.uid })
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
     const { roles, name, avatar, introduction, email } = data.user
     // roles must be a non-empty array
-    if (!roles || roles.length <= 0) {
-      throw Error('GetUserInfo: roles must be a non-null array!')
-    }
+    // if (!roles || roles.length <= 0) {
+    //   throw Error('GetUserInfo: roles must be a non-null array!')
+    // }
     this.SET_ROLES(roles)
     this.SET_NAME(name)
     this.SET_AVATAR(avatar)
@@ -112,13 +122,14 @@ class User extends VuexModule implements IUserState {
     if (this.token === '') {
       throw Error('LogOut: token is undefined!')
     }
-    await logout()
+    // await logout()
     removeToken()
     resetRouter()
 
     // Reset visited views and cached views
     TagsViewModule.delAllViews()
     this.SET_TOKEN('')
+    this.SET_UID('')
     this.SET_ROLES([])
   }
 }

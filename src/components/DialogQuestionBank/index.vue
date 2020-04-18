@@ -26,7 +26,19 @@
           />
         </el-form-item>
         <el-form-item :label="$t('questionBank.subject')">
-          <el-input v-model="data.subject" />
+          <el-select
+            v-model="data.subjectId"
+            :placeholder="$t('questionBank.ph_subject')"
+            style="width: 100%"
+            class="filter-item gap-right-32"
+          >
+            <el-option
+              v-for="item in subjectsList"
+              :key="item._id"
+              :label="item.name"
+              :value="item._id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item
           v-if="bankType !==2"
@@ -101,6 +113,13 @@
             <el-input v-model="data.correctAnswer" />
           </el-form-item>
         </template>
+        <el-form-item :label="$t('questionBank.explanation')">
+          <el-input
+            v-model="data.explanation"
+            :autosize="{minRows: 4, maxRows: 4}"
+            type="textarea"
+          />
+        </el-form-item>
         <el-form-item :label="$t('questionBank.knowledgePoint')">
           <el-input
             v-model="data.knowledgePoint"
@@ -137,8 +156,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { questionFilter } from '@/filters'
-import {IQuestion} from '@/api/types';
-import {isEmpty} from '@/utils/validate';
+import { IQuestion } from '@/api/types'
+import { isEmpty } from '@/utils/validate'
+import { getSubjects } from '@/api/subjects'
+import { UserModule } from '@/store/modules/user'
 
   @Component({
     name: 'QuestionBankDialog',
@@ -151,6 +172,7 @@ export default class extends Vue {
     private dialogVisible: boolean = true;
     private question = ''
     private subject = ''
+    private subjectsList = []
     // -1：默认，0：添加，1：编辑
     // private dialogType = -1;
 
@@ -159,6 +181,24 @@ export default class extends Vue {
     @Prop({ required: true }) private bankType!: number
 
     created() {
+      this.getSubjects()
+    }
+
+    mounted() {
+      // @ts-ignore
+      this.data.subjectId = this.data.subjectId._id
+    }
+
+    /**
+     * 获取科目信息
+     */
+    private async getSubjects() {
+      let params:any = {
+        page: 1,
+        limit: 100000000
+      }
+      const { data } = await getSubjects(params)
+      this.subjectsList = data.list
     }
 
     /**
@@ -178,14 +218,14 @@ export default class extends Vue {
         })
         return true
       }
-      // if (isEmpty(this.data.subjectId)) {
-      //   this.$message({
-      //     type: 'warning',
-      //     duration: 3 * 1000,
-      //     message: '请选择科目'
-      //   })
-      //   return true
-      // }
+      if (!this.data.subjectId) {
+        this.$message({
+          type: 'warning',
+          duration: 3 * 1000,
+          message: '请选择科目'
+        })
+        return true
+      }
       if (singleFilter.includes(this.bankType) && isEmpty(this.data.a)) {
         this.$message({
           type: 'warning',
@@ -252,16 +292,9 @@ export default class extends Vue {
       if (this.checkEmpty()) {
         return
       }
-      const res = await questionFilter(this.dialogType, this.bankType)(this.data)
-      if (res.data === 'success') {
-        this.$emit('fetch')
-        let messages = ['添加成功', '修改成功']
-        this.$message({
-          type: 'success',
-          duration: 3 * 1000,
-          message: messages[this.dialogType]
-        })
-      }
+      this.data.admin = UserModule.uid
+      await questionFilter(this.dialogType, this.bankType)(this.data)
+      this.$emit('fetch')
     }
 
     handleAvatarSuccess(res:any, file:any) {
