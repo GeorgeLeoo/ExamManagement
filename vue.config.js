@@ -20,7 +20,7 @@ module.exports = {
       errors: true
     },
     progress: false,
-    proxy: 'http://localhost:4500'
+    proxy: process.env.NODE_ENV === 'development' ? 'http://localhost:4500' : 'http://139.159.201.22:4500'
     // proxy: {
     //   // change xxx-api/login => /mock-api/v1/login
     //   // detail: https://cli.vuejs.org/config/#devserver-proxy

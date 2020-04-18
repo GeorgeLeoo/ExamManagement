@@ -44,7 +44,7 @@ export const updateStudent = (data: IUpdateTeacherData | {}) =>
 
 export const updateStudentStatus = (data: IUpdateStudentStatusData) =>
   request({
-    url: `/user/state`,
+    url: `/user/status`,
     method: 'put',
     data
   })

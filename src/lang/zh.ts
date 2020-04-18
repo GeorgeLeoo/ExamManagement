@@ -193,6 +193,7 @@ export default {
     dialogTitleModify: '学生信息修改'
   },
   subject: {
+    dialogTitleAdd: '科目添加',
     ph_name: '请输入科目名称',
     ph_author: '请输入创建者',
     index: '序号',

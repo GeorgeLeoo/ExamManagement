@@ -5,9 +5,9 @@
 -->
 <template>
   <div class="question-list">
-    <h3>多选题（共{{ data.list.length }}题，每小题{{ data.multipleScore }}分）</h3>
+    <h3>多选题（共{{ data.length }}题，每小题{{ score }}分）</h3>
     <dl
-      v-for="(item, index) in data.list"
+      v-for="(item, index) in data"
       :key="index"
       class="question-list-item"
     >
@@ -42,6 +42,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
   })
 export default class extends Vue {
     @Prop({ required: true }) private data!: []
+    @Prop({ required: true }) private score!: 0
 }
 </script>
 

@@ -138,23 +138,6 @@ export const constantRoutes: RouteConfig[] = [
     ]
   },
   {
-    path: '/score',
-    component: Layout,
-    redirect: '/score/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "score" */ '@/views/score/index.vue'),
-        name: 'Score',
-        meta: {
-          title: 'score',
-          icon: 'score',
-          noCache: true
-        }
-      }
-    ]
-  },
-  {
     path: '/subject',
     component: Layout,
     redirect: '/subject/index',
@@ -183,6 +166,23 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'paper',
           icon: 'paper',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/score',
+    component: Layout,
+    redirect: '/score/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import(/* webpackChunkName: "score" */ '@/views/score/index.vue'),
+        name: 'Score',
+        meta: {
+          title: 'score',
+          icon: 'score',
           noCache: true
         }
       }

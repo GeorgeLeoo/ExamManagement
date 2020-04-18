@@ -7,7 +7,7 @@
   <div class="app-container student-container">
     <div class="filter-container">
       <el-input
-        v-model="no"
+        v-model="username"
         :placeholder="$t('student.ph_no')"
         style="width: 200px;"
         class="filter-item gap-right-32"

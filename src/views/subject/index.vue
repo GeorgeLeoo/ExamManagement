@@ -14,7 +14,7 @@
         @keyup.enter.native="handleFilter"
       />
       <el-input
-        v-model="author"
+        v-model="admin"
         :placeholder="$t('subject.ph_author')"
         style="width: 200px;"
         class="filter-item gap-right-32"
@@ -78,7 +78,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.admin && scope.row.admin.username }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -87,7 +87,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.paperCount }}</span>
+          <span>{{ scope.row.paperCount || 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -132,7 +132,7 @@
 
     <el-dialog
       :visible.sync="dialogSubjectVisible"
-      :title="$t('notice.dialogTitleAdd')"
+      :title="$t('subject.dialogTitleAdd')"
       width="500px"
       @closed="handleCancel"
     >
@@ -181,6 +181,7 @@ import { createSubject, deleteSubject, getSubjects, updateSubject } from '@/api/
 import Pagination from '@/components/Pagination/index.vue'
 import { deepClone } from '@/utils'
 import { isValidSubject, isValidSubjectDesc } from '@/utils/validate'
+import { UserModule } from '@/store/modules/user'
 
   @Component({
     name: 'Subject',
@@ -198,7 +199,7 @@ export default class extends Vue {
     private subjectsList = [];
     private subjectItem: any = {}
     private name = ''
-    private author = ''
+    private admin = ''
     private total = 0;
     // -1：默认，0：添加，1：编辑
     private dialogType = -1;
@@ -216,14 +217,11 @@ export default class extends Vue {
      * 获取科目信息
      */
     private async getSubjects() {
-      if (this.name) {
-        Object.assign(this.params, { no: this.name })
-      }
-      if (this.author) {
-        Object.assign(this.params, { name: this.author })
-      }
+      let params:any = { ...this.params }
+      this.name && (params.name = this.name)
+      this.admin && (params.admin = this.admin)
       this.listLoading = true
-      const { data } = await getSubjects(this.params)
+      const { data } = await getSubjects(params)
       this.subjectsList = data.list
       this.total = data.total
       this.listLoading = false
@@ -275,7 +273,7 @@ export default class extends Vue {
      * 弹出框确定
      */
     async handleOk() {
-      if (!isValidSubject(this.subjectItem.no)) {
+      if (!isValidSubject(this.subjectItem.name)) {
         this.$message({
           type: 'warning',
           duration: 3 * 1000,
@@ -283,7 +281,7 @@ export default class extends Vue {
         })
         return
       }
-      if (!isValidSubjectDesc(this.subjectItem.no)) {
+      if (!isValidSubjectDesc(this.subjectItem.desc)) {
         this.$message({
           type: 'warning',
           duration: 3 * 1000,
@@ -293,33 +291,21 @@ export default class extends Vue {
       }
       const base = {
         name: this.subjectItem.name,
-        desc: this.subjectItem.desc
+        desc: this.subjectItem.desc,
+        admin: UserModule.uid
       }
       let res: any
       let message = ''
       if (this.dialogType === 0) {
         const body: ICreateSubjectData = base
-        message = '添加成功'
-        res = await createSubject(body)
+        await createSubject(body)
       } else if (this.dialogType === 1) {
         const body: IUpdateSubjectData | {} = {}
         Object.assign(body, base, { _id: this.subjectItem._id })
-        message = '更新成功'
-        res = await updateSubject(body)
+        await updateSubject(body)
       }
-      if (res.data === 'success') {
-        this.handleFilter()
-        this.dialogSubjectVisible = false
-        this.$message({
-          type: 'success',
-          message
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: res.data
-        })
-      }
+      this.handleFilter()
+      this.dialogSubjectVisible = false
     }
 
     /**
@@ -345,19 +331,8 @@ export default class extends Vue {
       const body: IDeleteParams = {
         _id
       }
-      const { data } = await deleteSubject(body)
-      if (data === 'success') {
-        this.handleFilter()
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: data
-        })
-      }
+      await deleteSubject(body)
+      this.handleFilter()
     }
 }
 </script>

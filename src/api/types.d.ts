@@ -105,7 +105,7 @@ export interface IScoreParams extends IPage {
 
 export interface IPaperParams extends IPage {
   subject?: string
-  gender?: number
+  paperType?: number
   name?: string
 }
 
@@ -203,6 +203,7 @@ export interface IQuestion extends IQuestionBaseParams{
   b?: string | undefined
   c?: string | undefined
   d?: string | undefined
+  admin: string
   correctAnswer: string | []
 }
 

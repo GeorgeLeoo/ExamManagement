@@ -7,33 +7,46 @@
   <div class="app-container paper-container">
     <div class="filter-container">
       <el-input
-        v-model="name"
+        v-model="paperName"
         :placeholder="$t('paper.ph_name')"
         style="width: 200px;"
         class="filter-item gap-right-32"
-        @keyup.enter.native="handleFilter"
+        @input="handleFilter"
       />
       <el-select
         v-model="subject"
-        :placeholder="$t('paper.ph_subject')"
+        :placeholder="$t('questionBank.ph_subject')"
         style="width: 200px"
         class="filter-item gap-right-32"
       >
         <el-option
-          v-for="item in $t('paper.select_genders')"
+          v-for="item in subjectsList"
+          :key="item._id"
+          :label="item.name"
+          :value="item._id"
+        />
+      </el-select>
+      <el-select
+        v-model="paperType"
+        :placeholder="$t('paper.ph_type')"
+        style="width: 200px"
+        class="filter-item gap-right-32"
+      >
+        <el-option
+          v-for="item in paperTypes"
           :key="item.id"
           :label="item.text"
           :value="item.id"
         />
       </el-select>
       <el-select
-        v-model="gender"
+        v-model="testType"
         :placeholder="$t('paper.ph_type')"
         style="width: 200px"
         class="filter-item gap-right-32"
       >
         <el-option
-          v-for="item in $t('paper.select_genders')"
+          v-for="item in testTypes"
           :key="item.id"
           :label="item.text"
           :value="item.id"
@@ -99,7 +112,7 @@
         width="120"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.subject }}</span>
+          <span>{{ scope.row.subject ? scope.row.subject.name : '' }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -109,7 +122,37 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.testType | testTypeFilter }}</span>
+          <el-tag
+            v-if="scope.row.testType === 0"
+          >
+            {{ scope.row.testType | testTypeFilter }}
+          </el-tag>
+          <el-tag
+            v-if="scope.row.testType === 1"
+            type="success"
+          >
+            {{ scope.row.testType | testTypeFilter }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        :label="$t('paper.durationTime')"
+        prop="durationTime"
+        align="center"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.startTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        :label="$t('paper.durationTime')"
+        prop="durationTime"
+        align="center"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.endTime }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -119,14 +162,14 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.durationTime }}</span>
+          <span>{{ scope.row | getDurationTime }}</span>
         </template>
       </el-table-column>
       <el-table-column
         :label="$t('paper.difficulty')"
         prop="difficulty"
         align="center"
-        width="200"
+        width="140"
       >
         <template slot-scope="scope">
           <el-rate
@@ -139,7 +182,6 @@
       <el-table-column
         :label="$t('paper.attention')"
         prop="attention"
-        width="300"
         align="center"
       >
         <template slot-scope="scope">
@@ -173,7 +215,7 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.total }}</span>
+          <span>{{ scope.row | paperTotalScore }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -183,7 +225,7 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.participantNumber }}</span>
+          <span>{{ scope.row.participantNumber ? scope.row.participantNumber : 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -205,7 +247,6 @@
           <el-button
             size="mini"
             type="success"
-            :disabled="row.paperType === 0"
             @click="handleShowPaper(row)"
           >
             {{ $t('paper.showPaper') }}
@@ -213,7 +254,7 @@
           <el-button
             size="mini"
             type="primary"
-            @click="handleModifyStatus(row, 0)"
+            @click="handleModifyStatus(row)"
           >
             {{ $t('edit') }}
           </el-button>
@@ -229,7 +270,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > params.limit"
       :total="total"
       :page.sync="page"
       :limit.sync="limit"
@@ -243,18 +284,46 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      @opened="handleGetPaperQuestions"
       @close="handleCancel"
     >
+      <div>
+        <h3 class="paper-name">
+          {{ paperQuestions.paperName }}
+        </h3>
+        <p class="subject-name">
+          {{ paperQuestions.subject ? paperQuestions.subject.name : '' }}
+        </p>
+        <p class="subject-name">
+          考试时间：{{ paperQuestions.startTime }} - {{ paperQuestions.endTime }}
+        </p>
+        <p class="subject-name">
+          考试时长：{{ paperQuestions | getDurationTime }}
+        </p>
+      </div>
       <div
         v-loading="isLoading"
-        class="paperDialogList"
+        class="paper-dialog-list paper-question"
       >
-        <Single :data="paperQuestions.single" />
-        <Multiple :data="paperQuestions.multiple" />
-        <Judge :data="paperQuestions.judge" />
-        <Completion :data="paperQuestions.completion" />
-        <AFQ :data="paperQuestions.afq" />
+        <Single
+          :data="paperQuestions.single"
+          :score="paperQuestions.singleScore"
+        />
+        <Multiple
+          :data="paperQuestions.multiple"
+          :score="paperQuestions.multipleScore"
+        />
+        <Judge
+          :data="paperQuestions.judge"
+          :score="paperQuestions.judgeScore"
+        />
+        <Completion
+          :data="paperQuestions.completion"
+          :score="paperQuestions.completionScore"
+        />
+        <AFQ
+          :data="paperQuestions.afq"
+          :score="paperQuestions.afqScore"
+        />
       </div>
       <span
         slot="footer"
@@ -265,7 +334,7 @@
         >{{ $t('cancel') }}</el-button>
         <el-button
           type="primary"
-          @click="handleOk"
+          @click="handleRandomOk"
         >{{ $t('ok') }}</el-button>
       </span>
     </el-dialog>
@@ -281,20 +350,36 @@
     >
       <div
         v-loading="isLoading"
-        class="paperDialogList"
+        class="paper-dialog-list"
       >
         <el-form label-width="100px">
           <el-form-item label="所属科目">
             <el-select
-              v-model="fixedForm.subjectId"
+              v-model="fixedForm.subject"
               class="fixedInput100"
               placeholder="请选择科目"
+              @input="handleSelectSubject"
             >
               <el-option
-                v-for="(item, index) in subjectList"
-                :key="index"
+                v-for="item in subjectList"
+                :key="item._id"
                 :label="item.name"
                 :value="item._id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="考试类型">
+            <el-select
+              v-model="fixedForm.testType"
+              class="fixedInput100"
+              placeholder=""
+              @input="handleSelectSubject"
+            >
+              <el-option
+                v-for="item in testTypesList"
+                :key="item.id"
+                :label="item.text"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -306,6 +391,8 @@
               v-model="fixedForm.time"
               class="fixedInput100"
               type="datetimerange"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -365,85 +452,120 @@
           accordion
         >
           <el-collapse-item
-            title="单选题"
+            :title="`单选题：已选择 ${singleCheckList.length} 题`"
             name="1"
           >
             <div>
+              <el-input
+                v-model="questionSingle"
+                :placeholder="$t('paper.ph_name')"
+                style="width: 200px;"
+                class="w100"
+                @input="getSingles"
+              />
               <el-checkbox-group v-model="singleCheckList">
                 <div
                   v-for="(item, index) in singleList"
                   :key="index"
                 >
                   <el-checkbox :label="item">
-                    {{ index + 1 }}. {{ item.question }}
+                    {{ index + 1 }}. {{ JSON.parse(item).question }}
                   </el-checkbox>
                 </div>
               </el-checkbox-group>
             </div>
           </el-collapse-item>
           <el-collapse-item
-            title="多选题"
+            :title="`多选题：已选择 ${multipleCheckList.length} 题`"
             name="2"
           >
             <div>
+              <el-input
+                v-model="questionMultiple"
+                :placeholder="$t('paper.ph_name')"
+                style="width: 200px;"
+                class="w100"
+                @input="getMultiples"
+              />
               <el-checkbox-group v-model="multipleCheckList">
                 <div
                   v-for="(item, index) in multipleList"
                   :key="index"
                 >
                   <el-checkbox :label="item">
-                    {{ index + 1 }}. {{ item.question }}
+                    {{ index + 1 }}. {{ JSON.parse(item).question }}
                   </el-checkbox>
                 </div>
               </el-checkbox-group>
             </div>
           </el-collapse-item>
           <el-collapse-item
-            title="判断题"
+            :title="`判断题：已选择 ${judgeCheckList.length} 题`"
             name="3"
           >
             <div>
+              <el-input
+                v-model="questionJudge"
+                :placeholder="$t('paper.ph_name')"
+                style="width: 200px;"
+                class="w100"
+                @input="getJudges"
+              />
               <el-checkbox-group v-model="judgeCheckList">
                 <div
                   v-for="(item, index) in judgeList"
                   :key="index"
                 >
                   <el-checkbox :label="item">
-                    {{ index + 1 }}. {{ item.question }}
+                    {{ index + 1 }}. {{ JSON.parse(item).question }}
                   </el-checkbox>
                 </div>
               </el-checkbox-group>
             </div>
           </el-collapse-item>
           <el-collapse-item
-            title="填空题"
+            :title="`填空题：已选择 ${completionCheckList.length} 题`"
             name="4"
           >
             <div>
+              <el-input
+                v-model="questionCompletion"
+                :placeholder="$t('paper.ph_name')"
+                style="width: 200px;"
+                class="w100"
+                @input="getCompletions"
+              />
               <el-checkbox-group v-model="completionCheckList">
                 <div
                   v-for="(item, index) in completionList"
                   :key="index"
                 >
                   <el-checkbox :label="item">
-                    {{ index + 1 }}. {{ item.question }}
+                    {{ index + 1 }}. {{ JSON.parse(item).question }}
                   </el-checkbox>
                 </div>
               </el-checkbox-group>
             </div>
           </el-collapse-item>
           <el-collapse-item
-            title="解答题"
+            :title="`解答题：已选择 ${afqCheckList.length} 题`"
             name="5"
           >
             <div>
+              <el-input
+                v-model="questionAFQ"
+                :placeholder="$t('paper.ph_name')"
+                style="width: 200px;"
+                class="w100"
+                @input="getAFQs"
+              />
               <el-checkbox-group v-model="afqCheckList">
                 <div
                   v-for="(item, index) in afqList"
                   :key="index"
                 >
                   <el-checkbox :label="item">
-                    {{ index + 1 }}. {{ item.question }}
+                    {{ index + 1 }}. {{ JSON.parse(item).question }}
                   </el-checkbox>
                 </div>
               </el-checkbox-group>
@@ -455,16 +577,17 @@
         slot="footer"
         class="dialog-footer"
       >
+        <span class="total-score">共 {{ fixTotalScore }} 分</span>
         <el-button
           @click="handleCancel"
         >{{ $t('cancel') }}</el-button>
-        <el-button
-          type="success"
-          @click="handleDialogShowPaper"
-        >{{ $t('paper.showPaper') }}</el-button>
+        <!--        <el-button-->
+        <!--          type="success"-->
+        <!--          @click="handleDialogShowPaper"-->
+        <!--        >{{ $t('paper.showPaper') }}</el-button>-->
         <el-button
           type="primary"
-          @click="handleOk"
+          @click="handleFixedOk"
         >{{ $t('ok') }}</el-button>
       </span>
     </el-dialog>
@@ -480,12 +603,12 @@
     >
       <div
         v-loading="isLoading"
-        class="paperDialogList"
+        class="paper-dialog-list"
       >
         <el-form label-width="100px">
           <el-form-item label="所属科目">
             <el-select
-              v-model="randomForm.subjectId"
+              v-model="randomForm.subject"
               class="fixedInput100"
               placeholder="请选择科目"
             >
@@ -494,6 +617,21 @@
                 :key="index"
                 :label="item.name"
                 :value="item._id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="考试类型">
+            <el-select
+              v-model="randomForm.testType"
+              class="fixedInput100"
+              placeholder=""
+              @input="handleSelectSubject"
+            >
+              <el-option
+                v-for="item in testTypesList"
+                :key="item.id"
+                :label="item.text"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -506,6 +644,8 @@
               class="fixedInput100"
               type="datetimerange"
               range-separator="至"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
             />
@@ -590,7 +730,7 @@
           </el-form-item>
         </el-form>
         <h3 class="total-score">
-          一共 {{ totalScore }} 分
+          共 {{ totalScore }} 分
         </h3>
       </div>
       <span
@@ -602,7 +742,7 @@
         >{{ $t('cancel') }}</el-button>
         <el-button
           type="primary"
-          @click="handleOk"
+          @click="handleRandomOk"
         >{{ $t('ok') }}</el-button>
       </span>
     </el-dialog>
@@ -618,21 +758,23 @@ import Multiple from '@/components/Multiple/index.vue'
 import Judge from '@/components/Judge/index.vue'
 import Completion from '@/components/Completion/index.vue'
 import AFQ from '@/components/AFQ/index.vue'
-import { deletePaper, getPaperQuestions, getPapers } from '@/api/papers'
+import { createPapers, deletePaper, getPaperQuestions, getPapers, updatePapers } from '@/api/papers'
 import { getSubjects } from '@/api/subjects'
 import { getAFQs, getCompletions, getJudges, getMultiples, getSingles } from '@/api/questions'
+import { deepClone } from '@/utils'
+import { UserModule } from '@/store/modules/user'
 
-  @Component({
-    name: 'Paper',
-    components: {
-      Pagination,
-      Single,
-      Multiple,
-      Judge,
-      Completion,
-      AFQ
-    }
-  })
+@Component({
+  name: 'Paper',
+  components: {
+    Pagination,
+    Single,
+    Multiple,
+    Judge,
+    Completion,
+    AFQ
+  }
+})
 
 export default class extends Vue {
     private defaultProps = {
@@ -649,21 +791,66 @@ export default class extends Vue {
     private fixedCombinePagerVisible: boolean = false;
     private randomCombinePagerVisible: boolean = false;
     private listLoading: boolean = false;
-    private subjectList = [];
     private papersList = [];
+    private questionAFQ = '';
+    private questionCompletion = '';
+    private questionJudge = '';
+    private questionMultiple = '';
+    private questionSingle = '';
+    private testType = '';
+    private testTypes = [
+      {
+        id: '',
+        text: '全部'
+      },
+      {
+        id: 0,
+        text: '模拟考试'
+      },
+      {
+        id: 1,
+        text: '正式考试'
+      }
+    ];
+    private testTypesList = [
+      {
+        id: 0,
+        text: '模拟考试'
+      },
+      {
+        id: 1,
+        text: '正式考试'
+      }
+    ];
+    private paperTypes = [
+      {
+        id: '',
+        text: '全部'
+      },
+      {
+        id: 0,
+        text: '固定组卷'
+      },
+      {
+        id: 1,
+        text: '随机组卷'
+      }
+    ];
     private paperQuestions = {};
     private activeName = '1'
     private subject = ''
+    private paperType = ''
     private gender = ''
-    private name = ''
+    private paperName = ''
     private page = 1;
     private limit = 10;
     private total = 0;
     private paperId = '';
     private fixedForm = {
-      subjectId: '',
+      subject: '',
       paperName: '',
       time: '',
+      testType: '',
       startTime: '',
       endTime: '',
       difficulty: 0,
@@ -675,7 +862,8 @@ export default class extends Vue {
       afqScore: ''
     };
     private randomForm = {
-      subjectId: '',
+      subject: '',
+      testType: '',
       paperName: '',
       time: '',
       startTime: '',
@@ -704,10 +892,26 @@ export default class extends Vue {
     private judgeList = []
     private completionList = []
     private afqList = []
+    private subjectList:any = []
+    private subjectsList:any = [
+      {
+        _id: '0',
+        name: '全部'
+      }
+    ]
 
     created() {
-      this.getPapers()
       this.getSubjects()
+      this.getPapers()
+    }
+
+    get fixTotalScore() {
+      const { singleScore, multipleScore, judgeScore, completionScore, afqScore } = this.fixedForm
+      return Number(singleScore) * this.singleCheckList.length +
+        Number(multipleScore) * this.multipleCheckList.length +
+        Number(judgeScore) * this.judgeCheckList.length +
+        Number(completionScore) * this.completionCheckList.length +
+        Number(afqScore) * this.afqCheckList.length
     }
 
     get totalScore() {
@@ -730,12 +934,27 @@ export default class extends Vue {
         afqNumber * afqScore
     }
 
+    /**
+     * 获取科目信息
+     */
+    private async getSubjects() {
+      let params:any = {
+        page: 1,
+        limit: 100000000
+      }
+      const { data } = await getSubjects(params)
+      this.subjectList.push(...data.list)
+      this.subjectsList.push(...data.list)
+    }
+
     private async getPapers() {
-      this.gender && Object.assign(this.params, { name: this.gender })
-      this.subject && Object.assign(this.params, { name: this.subject })
-      this.name && Object.assign(this.params, { no: this.name })
+      let params:any = { ...this.params }
+      this.paperName && (params.paperName = this.paperName)
+      this.subject !== '0' && (params.subject = this.subject)
+      this.paperType !== '' && (params.paperType = this.paperType)
+      this.testType !== '' && (params.testType = this.testType)
       this.listLoading = true
-      const { data } = await getPapers(this.params)
+      const { data } = await getPapers(params)
       this.papersList = data.list
       this.total = data.total
       this.listLoading = false
@@ -752,40 +971,50 @@ export default class extends Vue {
     handleCreate() {}
 
     /**
-     * 获取科目信息
+     * 选择科目
      */
-    private async getSubjects() {
-      const params: ISubjectParams = {
-        page: 1,
-        limit: 200
-      }
-      const { data } = await getSubjects(params)
-      this.subjectList = data.list
+    handleSelectSubject() {
+      this.handleFixedCombinePager()
     }
 
     private async getSingles() {
-      const { data } = await getSingles(this.params)
-      this.singleList = data.list
+      const params:any = deepClone(this.params)
+      this.fixedForm.subject && (params.subject = this.fixedForm.subject)
+      this.questionSingle && (params.question = this.questionSingle)
+      const { data } = await getSingles(params)
+      this.singleList = data.list.map((item: any) => JSON.stringify(item))
     }
 
     private async getMultiples() {
-      const { data } = await getMultiples(this.params)
-      this.multipleList = data.list
+      const params:any = deepClone(this.params)
+      this.fixedForm.subject && (params.subject = this.fixedForm.subject)
+      this.questionMultiple && (params.question = this.questionMultiple)
+      const { data } = await getMultiples(params)
+      this.multipleList = data.list.map((item: any) => JSON.stringify(item))
     }
 
     private async getJudges() {
-      const { data } = await getJudges(this.params)
-      this.judgeList = data.list
+      const params:any = deepClone(this.params)
+      this.fixedForm.subject && (params.subject = this.fixedForm.subject)
+      this.questionJudge && (params.question = this.questionJudge)
+      const { data } = await getJudges(params)
+      this.judgeList = data.list.map((item: any) => JSON.stringify(item))
     }
 
     private async getCompletions() {
-      const { data } = await getCompletions(this.params)
-      this.completionList = data.list
+      const params:any = deepClone(this.params)
+      this.fixedForm.subject && (params.subject = this.fixedForm.subject)
+      this.questionCompletion && (params.question = this.questionCompletion)
+      const { data } = await getCompletions(params)
+      this.completionList = data.list.map((item: any) => JSON.stringify(item))
     }
 
     private async getAFQs() {
-      const { data } = await getAFQs(this.params)
-      this.afqList = data.list
+      const params:any = deepClone(this.params)
+      this.fixedForm.subject && (params.subject = this.fixedForm.subject)
+      this.questionAFQ && (params.question = this.questionAFQ)
+      const { data } = await getAFQs(params)
+      this.afqList = data.list.map((item: any) => JSON.stringify(item))
     }
 
     handleFixedCombinePager() {
@@ -808,15 +1037,31 @@ export default class extends Vue {
       this.isLoading = false
     }
 
-    handleModifyStatus(row: any, status: Number) {}
+    handleModifyStatus(row: any) {
+      if (row.paperType === 0) {
+        this.fixedForm = deepClone(row)
+        // @ts-ignore
+        this.fixedForm.time = [this.fixedForm.startTime, this.fixedForm.endTime]
+        this.fixedForm.subject = this.fixedForm.subject._id
+        this.handleFixedCombinePager()
+        this.singleCheckList = row.single.map((item: any) => JSON.stringify(item))
+        this.multipleCheckList = row.multiple.map((item: any) => JSON.stringify(item))
+        this.judgeCheckList = row.judge.map((item: any) => JSON.stringify(item))
+        this.completionCheckList = row.completion.map((item: any) => JSON.stringify(item))
+        this.afqCheckList = row.afq.map((item: any) => JSON.stringify(item))
+      }
+      if (row.paperType === 1) {
+        this.randomForm = deepClone(row)
+        // @ts-ignore
+        this.randomForm.time = [this.randomForm.startTime, this.randomForm.endTime]
+        this.randomForm.subject = this.randomForm.subject._id
+        this.handleRandomCombinePager()
+      }
+    }
 
     handleShowPaper(row: any) {
       this.dialogVisible = true
-      this.paperId = row._id
-    }
-
-    handleGetPaperQuestions() {
-      this.getPaperQuestions(this.paperId)
+      this.paperQuestions = row
     }
 
     handleDialogShowPaper() {}
@@ -826,7 +1071,7 @@ export default class extends Vue {
       this.fixedCombinePagerVisible = false
       this.randomCombinePagerVisible = false
       this.randomForm = {
-        subjectId: '',
+        subject: '',
         paperName: '',
         time: '',
         startTime: '',
@@ -842,10 +1087,12 @@ export default class extends Vue {
         completionScore: 0,
         completionNumber: 0,
         afqScore: 0,
-        afqNumber: 0
+        afqNumber: 0,
+        testType: ''
       }
       this.fixedForm = {
-        subjectId: '',
+        testType: '',
+        subject: '',
         paperName: '',
         time: '',
         startTime: '',
@@ -858,9 +1105,57 @@ export default class extends Vue {
         completionScore: '',
         afqScore: ''
       }
+      this.singleCheckList = []
+      this.multipleCheckList = []
+      this.judgeCheckList = []
+      this.completionCheckList = []
+      this.afqCheckList = []
     }
 
-    handleOk() {}
+    /**
+     * 固定组卷保存
+     */
+    async handleFixedOk() {
+      const body = deepClone(this.fixedForm)
+      body.startTime = this.fixedForm.time[0]
+      body.endTime = this.fixedForm.time[1]
+      // @ts-ignore
+      body.single = this.singleCheckList.map(item => JSON.parse(item)._id)
+      // @ts-ignore
+      body.multiple = this.multipleCheckList.map(item => JSON.parse(item)._id)
+      // @ts-ignore
+      body.judge = this.judgeCheckList.map(item => JSON.parse(item)._id)
+      // @ts-ignore
+      body.completion = this.completionCheckList.map(item => JSON.parse(item)._id)
+      // @ts-ignore
+      body.afq = this.afqCheckList.map(item => JSON.parse(item)._id)
+      delete body['time']
+      body.admin = UserModule.uid
+      body.paperType = 0
+      if (!body._id) {
+        await createPapers(body)
+      } else {
+        await updatePapers(body)
+      }
+      this.handleCancel()
+      this.getPapers()
+      this.handleCancel()
+    }
+
+    /**
+     * 随机组卷
+     */
+    async handleRandomOk() {
+      const body = deepClone(this.randomForm)
+      body.startTime = this.randomForm.time[0]
+      body.endTime = this.randomForm.time[1]
+      delete body['time']
+      body.admin = UserModule.uid
+      body.paperType = 1
+      await createPapers(body)
+      this.handleCancel()
+      this.getPapers()
+    }
 
     /**
      * 删除显示警告
@@ -887,19 +1182,25 @@ export default class extends Vue {
       }
       await deletePaper(body)
       this.handleFilter()
-      this.$message({
-        type: 'success',
-        message: '删除成功!'
-      })
     }
 }
 </script>
 
 <style lang="scss">
   .paper-container{
-    .paperDialogList{
-      height: calc(100vh - 400px);
+    .paper-dialog-list{
+      height: calc(100vh - 600px);
       overflow: auto;
+    }
+    .paper-question {
+      padding: 0 16px;
+    }
+    .paper-name {
+      text-align: center;
+      margin-top: 0;
+    }
+    .subject-name {
+      text-align: center;
     }
     .fixedInput100 {
       width: 100%;
@@ -914,7 +1215,7 @@ export default class extends Vue {
       font-weight: 700;
     }
     .total-score {
-      padding-left: 20px;
+      padding: 0 20px;
     }
     .el-checkbox__label {
       width: 550px;
@@ -923,6 +1224,13 @@ export default class extends Vue {
       word-wrap: break-word;
       overflow: hidden;
       line-height: 26px;
+    }
+    .w100 {
+      width: 100%!important;
+      margin-bottom: 14px;
+    }
+    .selected-question {
+      margin-left: 16px;
     }
   }
 </style>

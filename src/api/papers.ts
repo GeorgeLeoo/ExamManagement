@@ -9,6 +9,20 @@ export const getPapers = (params: IPaperParams) =>
     params
   })
 
+export const createPapers = (data: any) =>
+  request({
+    url: papers,
+    method: 'post',
+    data
+  })
+
+export const updatePapers = (data: any) =>
+  request({
+    url: papers,
+    method: 'patch',
+    data
+  })
+
 export const getPaperQuestions = (params: IId) =>
   request({
     url: `${papers}/questions`,
