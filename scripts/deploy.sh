@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-set timeout 2000
+set timeout 200
 
 spawn zip -r ExamManagement.zip ./ExamManagement
 
@@ -26,6 +26,6 @@ expect "password"
 send "123loveyou,\n"
 expect "GeorgeLeeo"
 
-spawn unzip /root/www/ExamManagement.zip
-
+unzip ~/www/ExamManagement.zip
+rm -rf ExamManagement.zip
 expect eof
