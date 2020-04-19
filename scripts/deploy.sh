@@ -1,8 +1,6 @@
 #!/usr/bin/expect
 
-set timeout 200
-
-#spawn zip -r ExamManagement.zip ./ExamManagement
+set timeout 2000
 
 spawn scp -r ./ExamManagement root@139.159.201.22:/root/www
 
@@ -19,13 +17,5 @@ spawn scp -r ./ExamManagement root@139.159.201.22:/root/www
 }
 
 expect "100%"
-
-#spawn ssh root@139.159.201.22
-#
-#expect "password"
-#send "123loveyou,\n"
-#expect "GeorgeLeeo"
-#
-#send "unzip /root/www/ExamManagement.zip"
 
 expect eof
