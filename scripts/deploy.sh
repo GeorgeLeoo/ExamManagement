@@ -26,5 +26,6 @@ expect "password"
 send "123loveyou,\n"
 expect "GeorgeLeeo"
 
-spawn jar xvf /root/www/ExamManagement.zip
+send "jar xvf /root/www/ExamManagement.zip"
+
 expect eof
