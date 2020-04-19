@@ -26,6 +26,5 @@ expect "password"
 send "123loveyou,\n"
 expect "GeorgeLeeo"
 
-spawn cd ./www
-spawn unzip ~/www/ExamManagement.zip
+spawn unzip ~/www/ExamManagement.zip -d ~/www
 expect eof
