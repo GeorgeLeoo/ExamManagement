@@ -117,3 +117,10 @@ export const deepClone = (obj: any = {}) => {
 
   return result
 }
+
+/**
+ * 获取环境网络路径
+ */
+export const getBaseUrl = () => {
+  return process.env.NODE_ENV === 'development' ? 'http://localhost:4500' : 'http://139.159.201.22:4500'
+}

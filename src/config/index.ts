@@ -26,10 +26,14 @@ export const messageType: { [key: string]: string } = {
   error: 'error'
 }
 
+export const url:string = 'http://139.159.201.22:4500'
+export const local:string = 'http://localhost:4500'
+
 const config = {
   responseCode,
   messageDuration,
-  messageType
+  messageType,
+  url
 }
 
 export default config

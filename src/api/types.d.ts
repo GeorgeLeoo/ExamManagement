@@ -109,6 +109,10 @@ export interface IPaperParams extends IPage {
   name?: string
 }
 
+export interface IKnowledgePointParams extends IPage {
+  knowledgePoint?: string
+}
+
 export interface IQuestionParams extends IPage {
   subject?: string
   question?: number
