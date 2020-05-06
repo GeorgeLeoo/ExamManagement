@@ -219,6 +219,7 @@ export default {
     ph_type: '请选择试卷类型',
     subject: '科目',
     type: '试卷类型',
+    password: '密码',
     randomCombinePager: '随机组卷',
     fixedCombinePager: '固定组卷',
     durationTime: '考试时长',

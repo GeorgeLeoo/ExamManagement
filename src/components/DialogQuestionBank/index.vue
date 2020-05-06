@@ -113,6 +113,12 @@
             <el-input v-model="data.correctAnswer" />
           </el-form-item>
         </template>
+        <template v-if="bankType === 4">
+          <el-form-item label="关键词">
+            <p>多个关键词可以已中文顿号分割</p>
+            <el-input v-model="data.keywords" />
+          </el-form-item>
+        </template>
         <el-form-item :label="$t('questionBank.explanation')">
           <el-input
             v-model="data.explanation"
@@ -214,6 +220,7 @@ export default class extends Vue {
     private isLoadingKnowledgePoint = false
     private url:string = url
     private subjectsList = []
+    private keywords: [] = []
     private knowledgePointList = []
     // -1：默认，0：添加，1：编辑
     // private dialogType = -1;
@@ -264,6 +271,7 @@ export default class extends Vue {
      * 取消
      */
     handleCancel() {
+      this.keywords = []
       this.$emit('cancel')
     }
 

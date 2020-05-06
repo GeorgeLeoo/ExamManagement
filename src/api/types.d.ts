@@ -209,8 +209,10 @@ export interface IQuestion extends IQuestionBaseParams{
   d?: string | undefined
   admin: string
   correctAnswer: string | []
+  keywords?: []
 }
 
-export interface IUpdateScoreParams extends IId{
-  score: number
+export interface IUpdateScoreParams{
+  scoreId: string
+  answerId: string
 }

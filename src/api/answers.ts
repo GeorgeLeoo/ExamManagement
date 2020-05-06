@@ -9,9 +9,9 @@ export const getAnswers = (params: IId) =>
     params
   })
 
-export const updateScore = (params: IUpdateScoreParams) =>
+export const updateScore = (data: IUpdateScoreParams) =>
   request({
     url: `${answers}/score`,
     method: 'patch',
-    params
+    data
   })
