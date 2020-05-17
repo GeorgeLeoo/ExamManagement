@@ -97,7 +97,6 @@
       />
       <el-table-column
         :label="$t('paper.name')"
-        prop="paperName"
         align="center"
         width="180"
       >
@@ -107,7 +106,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.subject')"
-        prop="subject"
         align="center"
         width="120"
       >
@@ -117,7 +115,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.testType')"
-        prop="testType"
         align="center"
         width="100"
       >
@@ -136,8 +133,22 @@
         </template>
       </el-table-column>
       <el-table-column
+        :label="$t('paper.password')"
+        align="center"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.password }}</span>
+          <!--          <el-button-->
+          <!--            type="text"-->
+          <!--            @click="handleShowPassword(scope.row.password)"-->
+          <!--          >-->
+          <!--            查看密码-->
+          <!--          </el-button>-->
+        </template>
+      </el-table-column>
+      <el-table-column
         :label="$t('paper.durationTime')"
-        prop="durationTime"
         align="center"
         width="160"
       >
@@ -147,7 +158,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.durationTime')"
-        prop="durationTime"
         align="center"
         width="160"
       >
@@ -157,7 +167,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.durationTime')"
-        prop="durationTime"
         align="center"
         width="100"
       >
@@ -167,7 +176,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.difficulty')"
-        prop="difficulty"
         align="center"
         width="140"
       >
@@ -181,7 +189,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.attention')"
-        prop="attention"
         align="center"
       >
         <template slot-scope="scope">
@@ -190,7 +197,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.type')"
-        prop="paperType"
         align="center"
         width="100"
       >
@@ -210,7 +216,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.total')"
-        prop="total"
         align="center"
         width="100"
       >
@@ -220,7 +225,6 @@
       </el-table-column>
       <el-table-column
         :label="$t('paper.participantNumber')"
-        prop="participantNumber"
         align="center"
         width="100"
       >
@@ -245,6 +249,7 @@
       >
         <template slot-scope="{row}">
           <el-button
+            :disabled="row.paperType === 1"
             size="mini"
             type="success"
             @click="handleShowPaper(row)"
@@ -330,12 +335,9 @@
         class="dialog-footer"
       >
         <el-button
+          type="primary"
           @click="handleCancel"
         >{{ $t('cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="handleRandomOk"
-        >{{ $t('ok') }}</el-button>
       </span>
     </el-dialog>
 
@@ -373,7 +375,7 @@
               v-model="fixedForm.testType"
               class="fixedInput100"
               placeholder=""
-              @input="handleSelectSubject"
+              @input="handleSelectTestType"
             >
               <el-option
                 v-for="item in testTypesList"
@@ -382,6 +384,15 @@
                 :value="item.id"
               />
             </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="fixedForm.testType === 1"
+            label="考试密码"
+          >
+            <el-input
+              v-model="fixedForm.password"
+              class="fixedInput100"
+            />
           </el-form-item>
           <el-form-item label="试卷名称">
             <el-input v-model="fixedForm.paperName" />
@@ -572,6 +583,21 @@
             </div>
           </el-collapse-item>
         </el-collapse>
+        <!--        <el-form label-width="100px">-->
+        <!--          <el-form-item label="解答题关键词">-->
+        <!--            <p>多个关键词通过中文顿号隔开</p>-->
+        <!--            <div-->
+        <!--              v-for="item in afqCheckList.length"-->
+        <!--              :key="item"-->
+        <!--              class="keywords"-->
+        <!--            >-->
+        <!--              {{ item }}.-->
+        <!--              <el-input-->
+        <!--                v-model="keyWords[item]"-->
+        <!--              />-->
+        <!--            </div>-->
+        <!--          </el-form-item>-->
+        <!--        </el-form>-->
       </div>
       <span
         slot="footer"
@@ -625,7 +651,7 @@
               v-model="randomForm.testType"
               class="fixedInput100"
               placeholder=""
-              @input="handleSelectSubject"
+              @input="handleSelectTestType"
             >
               <el-option
                 v-for="item in testTypesList"
@@ -634,6 +660,15 @@
                 :value="item.id"
               />
             </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="randomForm.testType === 1"
+            label="考试密码"
+          >
+            <el-input
+              v-model="randomForm.password"
+              class="fixedInput100"
+            />
           </el-form-item>
           <el-form-item label="试卷名称">
             <el-input v-model="randomForm.paperName" />
@@ -728,6 +763,19 @@
               :max="100"
             />
           </el-form-item>
+          <!--          <el-form-item label="解答题关键词">-->
+          <!--            <p>多个关键词通过中文顿号隔开</p>-->
+          <!--            <div-->
+          <!--              v-for="item in randomForm.afqNumber"-->
+          <!--              :key="item"-->
+          <!--              class="keywords"-->
+          <!--            >-->
+          <!--              {{ item }}.-->
+          <!--              <el-input-->
+          <!--                v-model="keyWords[item]"-->
+          <!--              />-->
+          <!--            </div>-->
+          <!--          </el-form-item>-->
         </el-form>
         <h3 class="total-score">
           共 {{ totalScore }} 分
@@ -780,6 +828,7 @@ export default class extends Vue {
     private defaultProps = {
       question: 'question'
     }
+    private keyWords: [] =[]
     private singleCheckList: [] = [];
     private multipleCheckList: [] = [];
     private judgeCheckList: [] = [];
@@ -850,6 +899,7 @@ export default class extends Vue {
       subject: '',
       paperName: '',
       time: '',
+      password: '',
       testType: '',
       startTime: '',
       endTime: '',
@@ -864,6 +914,7 @@ export default class extends Vue {
     private randomForm = {
       subject: '',
       testType: '',
+      password: '',
       paperName: '',
       time: '',
       startTime: '',
@@ -977,6 +1028,8 @@ export default class extends Vue {
       this.handleFixedCombinePager()
     }
 
+    handleSelectTestType() {}
+
     private async getSingles() {
       const params:any = deepClone(this.params)
       this.fixedForm.subject && (params.subject = this.fixedForm.subject)
@@ -1077,6 +1130,7 @@ export default class extends Vue {
         paperName: '',
         time: '',
         startTime: '',
+        password: '',
         endTime: '',
         difficulty: 0,
         attention: '',
@@ -1094,6 +1148,7 @@ export default class extends Vue {
       }
       this.fixedForm = {
         testType: '',
+        password: '',
         subject: '',
         paperName: '',
         time: '',
@@ -1114,6 +1169,14 @@ export default class extends Vue {
       this.afqCheckList = []
     }
 
+    // handleShowPassword(password) {
+    //
+    // }
+
+    checkListMap(item: any) {
+      if (item === 'null') return
+      return JSON.parse(item)._id
+    }
     /**
      * 固定组卷保存
      */
@@ -1122,15 +1185,15 @@ export default class extends Vue {
       body.startTime = this.fixedForm.time[0]
       body.endTime = this.fixedForm.time[1]
       // @ts-ignore
-      body.single = this.singleCheckList.map(item => JSON.parse(item)._id)
+      body.single = this.singleCheckList.map(this.checkListMap)
       // @ts-ignore
-      body.multiple = this.multipleCheckList.map(item => JSON.parse(item)._id)
+      body.multiple = this.multipleCheckList.map(this.checkListMap)
       // @ts-ignore
-      body.judge = this.judgeCheckList.map(item => JSON.parse(item)._id)
+      body.judge = this.judgeCheckList.map(this.checkListMap)
       // @ts-ignore
-      body.completion = this.completionCheckList.map(item => JSON.parse(item)._id)
+      body.completion = this.completionCheckList.map(this.checkListMap)
       // @ts-ignore
-      body.afq = this.afqCheckList.map(item => JSON.parse(item)._id)
+      body.afq = this.afqCheckList.map(this.checkListMap)
       delete body['time']
       body.admin = UserModule.uid
       body.paperType = 0
@@ -1233,6 +1296,9 @@ export default class extends Vue {
     }
     .selected-question {
       margin-left: 16px;
+    }
+    .keywords {
+      margin-bottom: 10px;
     }
   }
 </style>

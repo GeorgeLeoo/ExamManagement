@@ -142,7 +142,7 @@
           <el-avatar
             :size="100"
             shape="square"
-            :src="scope.row.picture"
+            :src="scope.row.picture | pic"
           />
         </template>
       </el-table-column>

@@ -109,6 +109,10 @@ export interface IPaperParams extends IPage {
   name?: string
 }
 
+export interface IKnowledgePointParams extends IPage {
+  knowledgePoint?: string
+}
+
 export interface IQuestionParams extends IPage {
   subject?: string
   question?: number
@@ -205,8 +209,10 @@ export interface IQuestion extends IQuestionBaseParams{
   d?: string | undefined
   admin: string
   correctAnswer: string | []
+  keywords?: []
 }
 
-export interface IUpdateScoreParams extends IId{
-  score: number
+export interface IUpdateScoreParams{
+  scoreId: string
+  answerId: string
 }

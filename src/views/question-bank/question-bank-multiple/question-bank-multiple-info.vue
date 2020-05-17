@@ -152,7 +152,7 @@
           <el-avatar
             :size="100"
             shape="square"
-            :src="scope.row.picture"
+            :src="scope.row.picture | pic"
           />
         </template>
       </el-table-column>
@@ -274,6 +274,8 @@ export default class extends Vue {
     handleFetch() {
       this.handleFilter()
       this.dialogVisible = false
+      this.multipleItem = {}
+      this.multipleItem.correctAnswer = []
     }
 
     private async getMultiples() {
@@ -328,6 +330,7 @@ export default class extends Vue {
     handleCancel() {
       this.dialogVisible = false
       this.multipleItem = {}
+      this.multipleItem.correctAnswer = []
     }
 }
 </script>

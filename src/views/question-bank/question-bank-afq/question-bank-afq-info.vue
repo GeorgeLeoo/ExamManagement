@@ -84,6 +84,14 @@
                 <span>{{ props.row.correctAnswer }}</span>
               </el-form-item>
             </el-form-item>
+            <el-form-item label="关键词">
+              <el-form-item label="">
+                <span />
+              </el-form-item>
+              <el-form-item label="">
+                <span>{{ !props.row.keywords ? '无' : props.row.keywords }}</span>
+              </el-form-item>
+            </el-form-item>
             <el-form-item :label="$t('questionBank.explanation')">
               <el-form-item label="">
                 <span />
@@ -142,7 +150,7 @@
           <el-avatar
             :size="100"
             shape="square"
-            :src="scope.row.picture"
+            :src="scope.row.picture | pic"
           />
         </template>
       </el-table-column>

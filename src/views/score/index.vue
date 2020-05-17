@@ -61,20 +61,11 @@
     >
       <el-table-column
         :label="$t('score.no')"
-        prop="no"
+        prop="username"
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.no }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('score.name')"
-        prop="author"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.user.username }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -83,7 +74,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.paperName }}</span>
+          <span>{{ scope.row.paper.paperName }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -100,7 +91,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.startTime | parseTime }}</span>
+          <span>{{ scope.row.paper.startTime | parseTime }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -108,7 +99,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.endTime | parseTime }}</span>
+          <span>{{ scope.row.paper.endTime | parseTime }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -117,7 +108,27 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.diffTime }}</span>
+          <span>{{ scope.row.paper | getDurationTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="考试类型"
+        prop="status"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <el-tag
+            v-if="scope.row.paper.testType === 0"
+            type="success"
+          >
+            {{ scope.row.paper.testType | testTypeFilter }}
+          </el-tag>
+          <el-tag
+            v-if="scope.row.paper.testType === 1"
+            type="danger"
+          >
+            {{ scope.row.paper.testType | testTypeFilter }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -247,10 +258,11 @@
             class="afq-list"
           >
             <dt class="afq-item-title afq-item">
-              {{ index + 1 }}. {{ item.question.question }}
+              {{ index + 1 }}.
+              <!--              {{ item.original.question }}-->
             </dt>
             <dd class="afq-item">
-              参考答案：{{ item.question.correctAnswer }}
+              参考答案：{{ item.original.correctAnswer }}
             </dd>
             <dd class="afq-item">
               考试答案：{{ item.answer }}
@@ -258,23 +270,27 @@
             <dd class="afq-judgement">
               得分：
               <el-input
-                v-model="judgeScore[index]"
+                v-model.number="item.score"
                 style="width: 100px"
                 placeholder="0"
               />
-              <span class="padding" />
-              <el-button
-                type="primary"
-                @click="handleOk(index, item.question._id)"
-              >
-                {{ $t('submit') }}
-              </el-button>
+            </dd>
+            <dd class="afq-judgement">
+              满分：<span style="display: inline-block;width: 100px;text-align: left;padding-left: 16px;">{{ afqScore }}</span>
             </dd>
             <dd>
               <el-divider />
             </dd>
           </dl>
         </template>
+        <div class="submit-wrapper">
+          <el-button
+            type="primary"
+            @click="handleOk"
+          >
+            {{ $t('submit') }}
+          </el-button>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -288,6 +304,7 @@ import { getAllScores, getScores } from '@/api/scores'
 import { formatJson } from '@/utils'
 import { exportJson2Excel } from '@/utils/excel'
 import { getAnswers, updateScore } from '@/api/answers'
+import {login} from '@/api/users';
 
   @Component({
     name: 'Score',
@@ -304,7 +321,10 @@ export default class extends Vue {
     private exportAllPageLoading: boolean = false;
     private listLoading: boolean = false;
     private scoresList = [];
-    private answers = [];
+    private answers = {};
+    private afqScore = 0;
+    private score = 0;
+    private currentAFQScore = 0;
     private judgeScore: any = {};
     private no = ''
     private name = ''
@@ -314,6 +334,8 @@ export default class extends Vue {
     private autoWidth = true
 
     private bookType = 'xlsx'
+    private scoreId = ''
+    private answerId = ''
     private params: IScoreParams = {
       page: 1,
       limit: 10
@@ -349,7 +371,7 @@ export default class extends Vue {
      */
     handleDownload(obj: any) {
       const tHeader = ['学号', '姓名', '试卷名称', '分数', '开始考试时间', '结束考试时间', '总耗时']
-      const filterVal = ['no', 'name', 'paperName', 'score', 'startTime', 'endTime', 'diffTime']
+      const filterVal = ['["user"]["username"]', 'name', 'paperName', 'score', 'startTime', 'endTime', 'diffTime']
       const data = formatJson(filterVal, obj)
       exportJson2Excel(tHeader, data, this.filename !== '' ? this.filename : undefined, undefined, undefined, this.autoWidth, this.bookType)
     }
@@ -375,7 +397,17 @@ export default class extends Vue {
 
     handleShowPaper(row: any) {
       this.dialogVisible = true
-      this.getAnswers(row._id)
+      this.answers = row.answer
+      this.afqScore = row.paper.afqScore
+      this.scoreId = row._id
+      this.answerId = row.answer._id
+      this.score = row.score
+      // this.getAnswers(row._id)
+      // eslint-disable-next-line no-return-assign
+      this.currentAFQScore = 0
+      row.answer.afq.find((item: { score: number }) => {
+        this.currentAFQScore += item.score
+      })
     }
 
     async getAnswers(_id:string) {
@@ -391,26 +423,33 @@ export default class extends Vue {
     /**
      * 提交分数
      */
-    async handleOk(index: string, _id: string) {
-      const score = Number(this.judgeScore[index])
-      if (isNaN(score)) {
+    async handleOk() {
+      let i = 0
+      // @ts-ignore
+      this.answers.afq.map((item: any) => {
+        if (item.score > this.afqScore) i++
+      })
+      if (i !== 0) {
         this.$message({
-          type: 'error',
-          duration: 3 * 1000,
-          message: '请输入数字'
+          message: '输入的分数不得超过 ' + this.afqScore + ' 分',
+          type: 'warning'
         })
         return
       }
-      const params = {
-        _id,
-        score
+      const data = {
+        scoreId: this.scoreId,
+        answerId: this.answerId,
+        // @ts-ignore
+        afq: this.answers.afq,
+        // @ts-ignore
+        paper: this.answers.paper,
+        // @ts-ignore
+        afqScore: this.afqScore,
+        score: this.score,
+        currentAFQScore: this.currentAFQScore
       }
-      await updateScore(params)
-      this.$message({
-        type: 'success',
-        duration: 3 * 1000,
-        message: '提交成功'
-      })
+      await updateScore(data)
+      this.getScores()
     }
 }
 </script>
@@ -444,6 +483,12 @@ export default class extends Vue {
     .afq-judgement{
       margin-top: 16px;
       padding-right: 16px;
+      text-align: right;
+    }
+    dd {
+      margin-left: 0;
+    }
+    .submit-wrapper {
       text-align: right;
     }
   }

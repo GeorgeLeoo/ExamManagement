@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { IDeleteParams, IId, IPaperParams } from '@/api/types'
+import {IDeleteParams, IId, IKnowledgePointParams, IPaperParams} from '@/api/types'
 import { papers } from '@/api/urls'
 
 export const getPapers = (params: IPaperParams) =>
@@ -34,5 +34,12 @@ export const deletePaper = (params: IDeleteParams) =>
   request({
     url: papers,
     method: 'delete',
+    params
+  })
+
+export const getKnowledgePoints = (params: IKnowledgePointParams) =>
+  request({
+    url: '/papers/knowledge-points',
+    method: 'get',
     params
   })

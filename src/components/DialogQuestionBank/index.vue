@@ -46,14 +46,14 @@
         >
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="/upload-img"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
             <img
               v-if="data.picture"
-              :src="data.picture"
+              :src="data.picture | pic"
               class="avatar"
             >
             <i
@@ -113,6 +113,12 @@
             <el-input v-model="data.correctAnswer" />
           </el-form-item>
         </template>
+        <template v-if="bankType === 4">
+          <el-form-item label="关键词">
+            <p>多个关键词可以已中文顿号分割</p>
+            <el-input v-model="data.keywords" />
+          </el-form-item>
+        </template>
         <el-form-item :label="$t('questionBank.explanation')">
           <el-input
             v-model="data.explanation"
@@ -120,12 +126,48 @@
             type="textarea"
           />
         </el-form-item>
-        <el-form-item :label="$t('questionBank.knowledgePoint')">
-          <el-input
-            v-model="data.knowledgePoint"
-            :autosize="{minRows: 4, maxRows: 4}"
-            type="textarea"
-          />
+        <el-form-item
+          class="knowledge-point"
+          :label="$t('questionBank.knowledgePoint')"
+        >
+          <el-popover
+            placement="right"
+            width="400"
+            trigger="click"
+          >
+            <el-input
+              slot="reference"
+              v-model="data.knowledgePoint"
+              class="knowledge-point-input"
+              type="text"
+              placement="bottom"
+              @input="toSearchKnowledgePoint"
+            />
+            <div
+              v-if="knowledgePointList.length > 0"
+              style="height: 200px;overflow: auto;"
+            >
+              <div
+                v-for="item in knowledgePointList"
+                :key="item._id"
+              >
+                <p
+                  style="line-height: 32px;cursor: pointer;padding: 0 16px;margin: 0;"
+                  onmouseover="this.style.background='rgba(15,174,243,0.09)'"
+                  onmouseleave="this.style.background='#fff'"
+                  @click="data.knowledgePoint = item.knowledgePoint"
+                >
+                  {{ item.knowledgePoint }}
+                </p>
+              </div>
+            </div>
+            <div
+              v-else
+              class="empty"
+            >
+              <p>暂无数据</p>
+            </div>
+          </el-popover>
         </el-form-item>
         <el-form-item :label="$t('questionBank.difficulty')">
           <div class="rate-wrapper">
@@ -155,11 +197,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
-import { questionFilter } from '@/filters'
+import { pic, questionFilter } from '@/filters'
 import { IQuestion } from '@/api/types'
 import { isEmpty } from '@/utils/validate'
 import { getSubjects } from '@/api/subjects'
 import { UserModule } from '@/store/modules/user'
+import { url } from '@/config/index'
+import { getKnowledgePoints } from '@/api/papers'
 
   @Component({
     name: 'QuestionBankDialog',
@@ -172,7 +216,12 @@ export default class extends Vue {
     private dialogVisible: boolean = true;
     private question = ''
     private subject = ''
+    private knowledgePoint = ''
+    private isLoadingKnowledgePoint = false
+    private url:string = url
     private subjectsList = []
+    private keywords: [] = []
+    private knowledgePointList = []
     // -1：默认，0：添加，1：编辑
     // private dialogType = -1;
 
@@ -186,7 +235,24 @@ export default class extends Vue {
 
     mounted() {
       // @ts-ignore
-      this.data.subjectId = this.data.subjectId._id
+      this.data.subjectId && (this.data.subjectId = this.data.subjectId._id)
+    }
+
+    toSearchKnowledgePoint() {
+      this.getKnowledgePoint()
+    }
+    /**
+     * 根据考点查询
+     */
+    async getKnowledgePoint() {
+      let params: any = {
+        page: 1,
+        limit: 100000000
+      }
+      this.data.knowledgePoint && (params.knowledgePoint = this.data.knowledgePoint)
+      console.log(params)
+      const { data } = await getKnowledgePoints(params)
+      this.knowledgePointList = data.list
     }
 
     /**
@@ -205,6 +271,7 @@ export default class extends Vue {
      * 取消
      */
     handleCancel() {
+      this.keywords = []
       this.$emit('cancel')
     }
 
@@ -298,17 +365,27 @@ export default class extends Vue {
     }
 
     handleAvatarSuccess(res:any, file:any) {
+      this.$set(this.data, 'picture', res.data)
     }
     beforeAvatarUpload(file: any) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-      return isJPG && isLt2M
+      // const isJPG = file.type === 'image/jpeg'
+      return file.size / 1024 / 1024 < 2
     }
 }
 </script>
 
 <style lang="scss">
   .question-bank-single-info-add {
+    .knowledge-point-input {
+      position: relative;
+    }
+    .knowledge-point-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 999;
+    }
     .table-expand-content{
       color: #606266;
     }
@@ -340,6 +417,14 @@ export default class extends Vue {
     }
     .el-dialog {
       margin-top: 0!important;
+    }
+    p{
+      margin: 0;
+      padding: 0;
+    }
+    .empty {
+      text-align: center;
+      color: #9aaabf;
     }
   }
 </style>
