@@ -61,7 +61,7 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    uiutils.Message.error(error.response.data.msg)
+    error.response && error.response.data && uiutils.Message.error(error.response.data.msg)
     return Promise.reject(error)
   }
 )

@@ -53,7 +53,7 @@
           >
             <img
               v-if="data.picture"
-              :src="data.picture"
+              :src="data.picture | pic"
               class="avatar"
             >
             <i
@@ -197,7 +197,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
-import { questionFilter } from '@/filters'
+import { pic, questionFilter } from '@/filters'
 import { IQuestion } from '@/api/types'
 import { isEmpty } from '@/utils/validate'
 import { getSubjects } from '@/api/subjects'
@@ -365,12 +365,11 @@ export default class extends Vue {
     }
 
     handleAvatarSuccess(res:any, file:any) {
-      console.log(res)
+      this.$set(this.data, 'picture', res.data)
     }
     beforeAvatarUpload(file: any) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-      return isJPG && isLt2M
+      // const isJPG = file.type === 'image/jpeg'
+      return file.size / 1024 / 1024 < 2
     }
 }
 </script>

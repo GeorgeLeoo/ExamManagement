@@ -11,6 +11,7 @@ import {
   updateMultiple,
   updateSingle
 } from '@/api/questions'
+import config from '@/config'
 
 export { parseTime } from '@/utils'
 
@@ -123,4 +124,8 @@ export const paperTotalScore = (item: any) => {
       item.afqScore * item.afqNumber
   }
   return totalScore
+}
+
+export const pic = (item: string) => {
+  return config.picUrl + item
 }
