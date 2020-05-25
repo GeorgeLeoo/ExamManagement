@@ -108,7 +108,7 @@ export default class extends Vue {
   }
 
   get avatar() {
-    return UserModule.avatar
+    return 'https://dss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1305353222,2352820043&fm=26&gp=0.jpg'
   }
 
   private toggleSideBar() {

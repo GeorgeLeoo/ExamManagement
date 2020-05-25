@@ -25,13 +25,13 @@ const questionBankRoutes: RouteConfig = {
           component: () => import(/* webpackChunkName: "question-bank-single-info" */ '@/views/question-bank/question-bank-single/question-bank-single-info.vue'),
           name: 'questionBankSingleInfo',
           meta: { title: 'questionBankSingleInfo', icon: 'single-info' }
-        },
-        {
-          path: 'question-bank-single-upload',
-          component: () => import(/* webpackChunkName: "question-bank-single-upload" */ '@/views/question-bank/question-bank-single/question-bank-single-upload.vue'),
-          name: 'questionBankSingleUpload',
-          meta: { title: 'questionBankSingleUpload', icon: 'excel' }
         }
+        // {
+        //   path: 'question-bank-single-upload',
+        //   component: () => import(/* webpackChunkName: "question-bank-single-upload" */ '@/views/question-bank/question-bank-single/question-bank-single-upload.vue'),
+        //   name: 'questionBankSingleUpload',
+        //   meta: { title: 'questionBankSingleUpload', icon: 'excel' }
+        // }
       ]
     },
     {
@@ -47,13 +47,13 @@ const questionBankRoutes: RouteConfig = {
           component: () => import(/* webpackChunkName: "question-bank-multiple-info" */ '@/views/question-bank/question-bank-multiple/question-bank-multiple-info.vue'),
           name: 'questionBankMultipleInfo',
           meta: { title: 'questionBankMultipleInfo', icon: 'multipleInfo' }
-        },
-        {
-          path: 'question-bank-multiple-upload',
-          component: () => import(/* webpackChunkName: "question-bank-multiple-upload" */ '@/views/question-bank/question-bank-multiple/question-bank-multiple-upload.vue'),
-          name: 'questionBankMultipleUpload',
-          meta: { title: 'questionBankMultipleUpload', icon: 'excel' }
         }
+        // {
+        //   path: 'question-bank-multiple-upload',
+        //   component: () => import(/* webpackChunkName: "question-bank-multiple-upload" */ '@/views/question-bank/question-bank-multiple/question-bank-multiple-upload.vue'),
+        //   name: 'questionBankMultipleUpload',
+        //   meta: { title: 'questionBankMultipleUpload', icon: 'excel' }
+        // }
       ]
     },
     {
@@ -69,13 +69,13 @@ const questionBankRoutes: RouteConfig = {
           component: () => import(/* webpackChunkName: "question-bank-judge-info" */ '@/views/question-bank/question-bank-judge/question-bank-judge-info.vue'),
           name: 'questionBankJudgeInfo',
           meta: { title: 'questionBankJudgeInfo', icon: 'judgeInfo' }
-        },
-        {
-          path: 'question-bank-judge-upload',
-          component: () => import(/* webpackChunkName: "question-bank-judge-upload" */ '@/views/question-bank/question-bank-judge/question-bank-judge-upload.vue'),
-          name: 'questionBankJudgeUpload',
-          meta: { title: 'questionBankJudgeUpload', icon: 'excel' }
         }
+        // {
+        //   path: 'question-bank-judge-upload',
+        //   component: () => import(/* webpackChunkName: "question-bank-judge-upload" */ '@/views/question-bank/question-bank-judge/question-bank-judge-upload.vue'),
+        //   name: 'questionBankJudgeUpload',
+        //   meta: { title: 'questionBankJudgeUpload', icon: 'excel' }
+        // }
       ]
     },
     {
@@ -91,13 +91,13 @@ const questionBankRoutes: RouteConfig = {
           component: () => import(/* webpackChunkName: "question-bank-completion-info" */ '@/views/question-bank/question-bank-completion/question-bank-completion-info.vue'),
           name: 'questionBankCompletionInfo',
           meta: { title: 'questionBankCompletionInfo', icon: 'completionInfo' }
-        },
-        {
-          path: 'question-bank-completion-upload',
-          component: () => import(/* webpackChunkName: "question-bank-completion-upload" */ '@/views/question-bank/question-bank-completion/question-bank-completion-upload.vue'),
-          name: 'questionBankCompletionUpload',
-          meta: { title: 'questionBankCompletionUpload', icon: 'excel' }
         }
+        // {
+        //   path: 'question-bank-completion-upload',
+        //   component: () => import(/* webpackChunkName: "question-bank-completion-upload" */ '@/views/question-bank/question-bank-completion/question-bank-completion-upload.vue'),
+        //   name: 'questionBankCompletionUpload',
+        //   meta: { title: 'questionBankCompletionUpload', icon: 'excel' }
+        // }
       ]
     },
     {
@@ -113,13 +113,13 @@ const questionBankRoutes: RouteConfig = {
           component: () => import(/* webpackChunkName: "question-bank-afq-info" */ '@/views/question-bank/question-bank-afq/question-bank-afq-info.vue'),
           name: 'questionBankAFQInfo',
           meta: { title: 'questionBankAFQInfo', icon: 'documentation' }
-        },
-        {
-          path: 'question-bank-afq-upload',
-          component: () => import(/* webpackChunkName: "question-bank-afq-upload" */ '@/views/question-bank/question-bank-afq/question-bank-afq-upload.vue'),
-          name: 'questionBankAFQUpload',
-          meta: { title: 'questionBankAFQUpload', icon: 'excel' }
         }
+        // {
+        //   path: 'question-bank-afq-upload',
+        //   component: () => import(/* webpackChunkName: "question-bank-afq-upload" */ '@/views/question-bank/question-bank-afq/question-bank-afq-upload.vue'),
+        //   name: 'questionBankAFQUpload',
+        //   meta: { title: 'questionBankAFQUpload', icon: 'excel' }
+        // }
       ]
     }
   ]

@@ -28,7 +28,7 @@ export const messageType: { [key: string]: string } = {
 
 export const url:string = 'http://139.159.201.22:4500'
 export const local:string = 'http://localhost:4500'
-export const picUrl:string = 'http://192.168.0.102:62789'
+export const picUrl:string = 'http://192.168.0.102:50163'
 
 const config = {
   responseCode,
