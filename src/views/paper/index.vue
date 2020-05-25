@@ -248,6 +248,7 @@
         fixed="right"
       >
         <template slot-scope="{row}">
+          <!--            v-if="row.paperType === 1"-->
           <el-button
             :disabled="row.paperType === 1"
             size="mini"
@@ -256,6 +257,15 @@
           >
             {{ $t('paper.showPaper') }}
           </el-button>
+          <!--          <el-button-->
+          <!--            v-if="row.paperType === 0"-->
+          <!--            :disabled="row.admin && (row.admin._id === uid)"-->
+          <!--            size="mini"-->
+          <!--            type="success"-->
+          <!--            @click="handleShowPaper(row)"-->
+          <!--          >-->
+          <!--            {{ $t('paper.showPaper') }}-->
+          <!--          </el-button>-->
           <el-button
             size="mini"
             type="primary"
@@ -829,6 +839,7 @@ export default class extends Vue {
       question: 'question'
     }
     private keyWords: [] =[]
+    private uid: string = UserModule.uid
     private singleCheckList: [] = [];
     private multipleCheckList: [] = [];
     private judgeCheckList: [] = [];

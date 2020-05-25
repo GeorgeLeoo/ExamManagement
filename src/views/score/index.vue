@@ -370,7 +370,7 @@ export default class extends Vue {
      * 下载数据
      */
     handleDownload(obj: any) {
-      const tHeader = ['学号', '姓名', '试卷名称', '分数', '开始考试时间', '结束考试时间', '总耗时']
+      const tHeader = ['账号', '姓名', '试卷名称', '分数', '开始考试时间', '结束考试时间', '总耗时']
       const filterVal = ['["user"]["username"]', 'name', 'paperName', 'score', 'startTime', 'endTime', 'diffTime']
       const data = formatJson(filterVal, obj)
       exportJson2Excel(tHeader, data, this.filename !== '' ? this.filename : undefined, undefined, undefined, this.autoWidth, this.bookType)
@@ -390,8 +390,11 @@ export default class extends Vue {
      */
     async handleExportAllPage() {
       this.exportAllPageLoading = true
-      const res = await getAllScores()
-      this.handleDownload(res.data.list)
+      const { data } = await getScores({
+        page: 1,
+        limit: 10000000
+      })
+      this.handleDownload(data.list)
       this.exportAllPageLoading = false
     }
 

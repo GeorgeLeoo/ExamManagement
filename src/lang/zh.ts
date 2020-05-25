@@ -1,11 +1,11 @@
 export default {
   route: {
     dashboard: '首页',
-    teacher: '教师管理',
-    teacherInfo: '教师信息管理',
+    teacher: '管理员管理',
+    teacherInfo: '管理员信息管理',
     teacherInfoUpload: '批量上传',
-    student: '学生管理',
-    studentInfo: '学生信息管理',
+    student: '考生管理',
+    studentInfo: '考生信息管理',
     studentInfoUpload: '批量上传',
     subject: '科目管理',
     score: '成绩管理',
@@ -132,12 +132,12 @@ export default {
         id: 1
       }
     ],
-    dialogTitleAdd: '教师信息添加',
-    dialogTitleModify: '教师信息修改',
+    dialogTitleAdd: '管理员信息添加',
+    dialogTitleModify: '管理员信息修改',
     search: '搜索',
     add: '添加',
-    exportCurrentPage: '导出当前页教师信息',
-    exportAllPage: '导出所有教师信息',
+    exportCurrentPage: '导出当前页管理员信息',
+    exportAllPage: '导出所有管理员信息',
     username: '账号',
     name: '姓名',
     password: '密码',
@@ -149,7 +149,7 @@ export default {
     state: '状态',
     signUpAt: '注册时间',
     createdAt: '创建时间',
-    downloadTemplate: '请先下载教师信息模板'
+    downloadTemplate: '请先下载管理员信息模板'
   },
   student: {
     ph_no: '请输入账号',
@@ -175,8 +175,8 @@ export default {
     ],
     search: '搜索',
     add: '添加',
-    exportCurrentPage: '导出当前页学生信息',
-    exportAllPage: '导出所有学生信息',
+    exportCurrentPage: '导出当前页考生信息',
+    exportAllPage: '导出所有考生信息',
     username: '账号',
     name: '姓名',
     gender: '性别',
@@ -188,9 +188,9 @@ export default {
     state: '状态',
     signUpAt: '注册时间',
     createdAt: '创建时间',
-    downloadTemplate: '请先下载学生信息模板',
-    dialogTitleAdd: '学生信息添加',
-    dialogTitleModify: '学生信息修改'
+    downloadTemplate: '请先下载考生信息模板',
+    dialogTitleAdd: '考生信息添加',
+    dialogTitleModify: '考生信息修改'
   },
   subject: {
     dialogTitleAdd: '科目添加',
@@ -237,8 +237,8 @@ export default {
     showPaper: '查看试卷'
   },
   score: {
-    no: '学号',
-    ph_no: '请输入学号',
+    no: '账号',
+    ph_no: '请输入账号',
     ph_paperName: '请输入试卷名称',
     paperName: '试卷名称',
     name: '姓名',
@@ -248,8 +248,8 @@ export default {
     diffTime: '总耗时',
     showAnswer: '查看答题卡',
     status: '试卷状态',
-    exportCurrentPage: '导出当页学生成绩',
-    exportAllPage: '导出所有学生成绩'
+    exportCurrentPage: '导出当页考生成绩',
+    exportAllPage: '导出所有考生成绩'
   },
   questionBank: {
     dialogTitleModify: '修改',
@@ -279,10 +279,10 @@ export default {
     profile: '个人中心'
   },
   login: {
-    no: '学号',
-    correctNO: '请输入正确的学号',
-    existNo: '该学号已注册',
-    emptyNo: '学号不能为空',
+    no: '账号',
+    correctNO: '请输入正确的账号',
+    existNo: '该账号已注册',
+    emptyNo: '账号不能为空',
     setPassword: '设置密码',
     emptyPassword: '密码不能为空',
     email: '邮箱',
@@ -301,8 +301,8 @@ export default {
       '邮件已发送至你的邮箱',
       '快去查收邮件吧'
     ],
-    account: '学号或邮箱',
-    accountHint: '请输入正确的邮箱或学号',
+    account: '账号或邮箱',
+    accountHint: '请输入正确的邮箱或账号',
     passwordHint: '密码由字母和数字组成，且不少于 6 位',
     freeSignUp: '免费注册',
     forgetPassword: '忘记密码',

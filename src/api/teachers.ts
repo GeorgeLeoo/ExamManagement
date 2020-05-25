@@ -17,7 +17,7 @@ export const getTeachers = (params: ITeacherParams) =>
 
 export const getAllTeachers = () =>
   request({
-    url: `${teachers}/all`,
+    url: `/admin/all`,
     method: 'get'
   })
 
